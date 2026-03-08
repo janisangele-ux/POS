@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Janis Angele">
+  <meta name="creator" content="Janis Angele">
+  <meta name="copyright" content="© 2026 Mark-Up BV">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Velvet POS</title>
+  <style>
+    :root {
+      --bg: #ececec;
+      --card: #ffffff;
+      --text: #111111;
+      --blue: #2a83ff;
+      --green: #17d84b;
+      --orange: #ff9800;
+      --red: #ff1744;
+      --muted: #666666;
+      --shadow: 0 6px 18px rgba(0,0,0,.12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: Georgia, serif; }
+    body { min-height: 100vh; }
+
+    .wrap {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 18px 16px 28px;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .titlebox {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      min-width: 260px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      font-size: 14px;
+      color: var(--muted);
+      font-family: Arial, sans-serif;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    select,
+    input {
+      font: inherit;
+    }
+
+    .action-btn {
+      border: 0;
+      background: var(--card);
+      padding: 12px 16px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .event-box {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid #d7d7d7;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .drink-btn {
+      position: relative;
+      min-height: 128px;
+      border: 2px solid var(--blue);
+      border-radius: var(--radius);
+      background: var(--green);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      padding: 16px;
+      text-align: center;
+      transition: transform .04s ease, filter .15s ease;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .drink-btn:active {
+      transform: scale(.985);
+      filter: brightness(.95);
+    }
+
+    .drink-btn.low { background: var(--orange); }
+    .drink-btn.out { background: var(--red); color: #000; }
+
+    .drink-name {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 64px;
+      font-size: 28px;
+      line-height: 1.05;
+    }
+
+    .drink-meta {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .count {
+      font-weight: 700;
+      background: rgba(255,255,255,.72);
+      border-radius: 999px;
+      padding: 6px 10px;
+      min-width: 44px;
+    }
+
+    .stock {
+      opacity: .9;
+    }
+
+    .bottom {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #ececec;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th:last-child, td:last-child { text-align: right; }
+
+    .mini-btn {
+      border: 0;
+      background: #efefef;
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+    }
+
+    .save-note {
+      font-family: Arial, sans-serif;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 820px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .bottom { grid-template-columns: 1fr; }
+      .event-box { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .grid { grid-template-columns: 1fr; }
+      .drink-name { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="titlebox">
+        <h1 class="title">Velvet drankenteller</h1>
+        <div class="subtitle">Tik op een knop om een geschonken drank te registreren.</div>
+      </div>
+      <div class="actions">
+        <button class="action-btn" id="saveBtn">Bewaar event</button>
+        <button class="action-btn" id="resetBtn">Reset tellers</button>
+        <button class="action-btn" id="exportBtn">Exporteer CSV</button>
+      </div>
+    </div>
+
+    <div class="event-box">
+      <div class="field">
+        <label for="eventName">Eventnaam</label>
+        <input id="eventName" type="text" placeholder="bv. Huwelijksfeest White Cat" />
+      </div>
+      <div class="field">
+        <label for="eventDate">Datum</label>
+        <input id="eventDate" type="date" />
+      </div>
+    </div>
+
+    <div class="grid" id="drinkGrid"></div>
+
+    <div class="bottom">
+      <div class="panel">
+        <h2>Overzicht</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Drank</th>
+              <th>Aantal</th>
+              <th>Voorraad na</th>
+              <th>Actie</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h2>Instellingen</h2>
+        <table>
+          <tbody id="settingsBody"></tbody>
+        </table>
+        <div class="save-note">Voorraad en tellers worden lokaal op de iPad/browser bewaard. Gebruik “Bewaar event” voor een eventsnapshot of “Exporteer CSV” voor verwerking in Excel of Google Sheets.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'velvet-drinkteller-v1';
+    const EVENT_ARCHIVE_KEY = 'velvet-drinkteller-archive-v1';
+
+    const defaultDrinks = [
+      { id: 'pils', name: 'Pils', stock: 2, count: 0 },
+      { id: 'pils_na', name: 'Pils NA', stock: 2, count: 0 },
+      { id: 'cola', name: 'Cola', stock: 24, count: 0 },
+      { id: 'cola_zero', name: 'Cola zero', stock: 24, count: 0 },
+      { id: 'seven_up', name: '7-up', stock: 24, count: 0 },
+      { id: 'ice_tea', name: 'Ice tea', stock: 24, count: 0 },
+      { id: 'ginger_beer', name: 'Ginger beer', stock: 12, count: 0 },
+      { id: 'tonic', name: 'Tonic', stock: 12, count: 0 },
+      { id: 'looza_appel', name: 'Looza appel', stock: 12, count: 0 },
+      { id: 'looza_sinaas', name: 'Looza sinaas', stock: 12, count: 0 },
+      { id: 'cranberry', name: 'Cranberry', stock: 12, count: 0 },
+      { id: 'bruis_water', name: 'Bruis water', stock: 24, count: 0 },
+      { id: 'plat_water', name: 'Plat water', stock: 24, count: 0 },
+      { id: 'prosecco', name: 'Prosecco glas', stock: 0, count: 0 },
+      { id: 'huiswijn_wit', name: 'Huiswijn wit', stock: 0, count: 0 },
+      { id: 'huiswijn_rood', name: 'Huiswijn rood', stock: 0, count: 0 },
+      { id: 'prosecco_fles', name: 'Prosecco fles', stock: 0, count: 0 }
+    ];
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return structuredClone(defaultDrinks);
+      try {
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) throw new Error('Invalid state');
+        return parsed;
+      } catch {
+        return structuredClone(defaultDrinks);
+      }
+    }
+
+    let drinks = loadState();
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(drinks));
+    }
+
+    function getStatusClass(stockAfter) {
+      if (stockAfter <= 0) return 'out';
+      if (stockAfter <= 2) return 'low';
+      return '';
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('drinkGrid');
+      grid.innerHTML = '';
+
+      drinks.forEach(drink => {
+        const stockAfter = drink.stock - drink.count;
+        const btn = document.createElement('button');
+        btn.className = `drink-btn ${getStatusClass(stockAfter)}`.trim();
+        btn.innerHTML = `
+          <div class="drink-name">${drink.name}</div>
+          <div class="drink-meta">
+            <span class="count">${drink.count}</span>
+            <span class="stock">na: ${stockAfter}</span>
+          </div>
+        `;
+        btn.addEventListener('click', () => {
+          drink.count += 1;
+          saveState();
+          renderAll();
+          if (navigator.vibrate) navigator.vibrate(12);
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderSummary() {
+      const body = document.getElementById('summaryBody');
+      body.innerHTML = '';
+
+      drinks.forEach(drink => {
+        const tr = document.createElement('tr');
+        const stockAfter = drink.stock - drink.count;
+        tr.innerHTML = `
+          <td>${drink.name}</td>
+          <td>${drink.count}</td>
+          <td>${stockAfter}</td>
+          <td>
+            <button class="mini-btn" data-action="minus">-1</button>
+            <button class="mini-btn" data-action="plus">+1</button>
+          </td>
+        `;
+        tr.querySelector('[data-action="minus"]').addEventListener('click', () => {
+          drink.count = Math.max(0, drink.count - 1);
+          saveState();
+          renderAll();
+        });
+        tr.querySelector('[data-action="plus"]').addEventListener('click', () => {
+          drink.count += 1;
+          saveState();
+          renderAll();
+        });
+        body.appendChild(tr);
+      });
+    }
+
+    function renderSettings() {
+      const body = document.getElementById('settingsBody');
+      body.innerHTML = '';
+
+      drinks.forEach((drink, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${drink.name}</td>
+          <td>
+            <input type="number" min="0" step="1" value="${drink.stock}" style="width: 92px; padding: 8px 10px; border-radius: 10px; border: 1px solid #d7d7d7;" />
+          </td>
+        `;
+        const input = tr.querySelector('input');
+        input.addEventListener('change', (e) => {
+          const value = parseInt(e.target.value || '0', 10);
+          drinks[index].stock = Number.isNaN(value) ? 0 : value;
+          saveState();
+          renderAll();
+        });
+        body.appendChild(tr);
+      });
+    }
+
+    function renderAll() {
+      renderGrid();
+      renderSummary();
+      renderSettings();
+    }
+
+    function todayIso() {
+      const d = new Date();
+      const tzOffset = d.getTimezoneOffset() * 60000;
+      return new Date(d.getTime() - tzOffset).toISOString().slice(0, 10);
+    }
+
+    function exportCsv() {
+      const eventName = document.getElementById('eventName').value.trim();
+      const eventDate = document.getElementById('eventDate').value || todayIso();
+      const rows = [['eventnaam', 'datum', 'drank', 'startvoorraad', 'aantal', 'voorraad_na']];
+      drinks.forEach(d => {
+        rows.push([
+          csvSafe(eventName),
+          eventDate,
+          csvSafe(d.name),
+          d.stock,
+          d.count,
+          d.stock - d.count
+        ]);
+      });
+      const csv = rows.map(r => r.join(';')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `velvet-dranken-${eventDate}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function csvSafe(value) {
+      const str = String(value ?? '');
+      if (str.includes(';') || str.includes('"') || str.includes('\n')) {
+        return '"' + str.replaceAll('"', '""') + '"';
+      }
+      return str;
+    }
+
+    function saveEventSnapshot() {
+      const eventName = document.getElementById('eventName').value.trim() || 'Onbenoemd event';
+      const eventDate = document.getElementById('eventDate').value || todayIso();
+      const archive = JSON.parse(localStorage.getItem(EVENT_ARCHIVE_KEY) || '[]');
+      archive.push({
+        savedAt: new Date().toISOString(),
+        eventName,
+        eventDate,
+        rows: drinks.map(d => ({
+          name: d.name,
+          startStock: d.stock,
+          count: d.count,
+          stockAfter: d.stock - d.count
+        }))
+      });
+      localStorage.setItem(EVENT_ARCHIVE_KEY, JSON.stringify(archive));
+      alert('Event bewaard op dit toestel/browser.');
+    }
+
+    function resetCounts() {
+      const ok = confirm('Alle tellers op nul zetten? De ingestelde voorraad blijft behouden.');
+      if (!ok) return;
+      drinks = drinks.map(d => ({ ...d, count: 0 }));
+      saveState();
+      renderAll();
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', saveEventSnapshot);
+    document.getElementById('resetBtn').addEventListener('click', resetCounts);
+    document.getElementById('exportBtn').addEventListener('click', exportCsv);
+
+    const dateInput = document.getElementById('eventDate');
+    if (!dateInput.value) dateInput.value = todayIso();
+
+    renderAll();
+  </script>
+</body>
+</html>
+
