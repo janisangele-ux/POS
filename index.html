@@ -254,9 +254,23 @@
         <input id="eventName" type="text" placeholder="bv. Huwelijksfeest White Cat" />
       </div>
       <div class="field">
+        <label for="guestCount">Aantal gasten</label>
+        <input id="guestCount" type="number" min="0" step="1" placeholder="bv. 120" />
+      </div>
+      <div class="field">
         <label for="eventDate">Datum</label>
         <input id="eventDate" type="date" />
       </div>
+        <div class="field">
+    <label for="formulaSelect">Drankenformule</label>
+    <select id="formulaSelect" style="width: 100%; border: 1px solid #d7d7d7; border-radius: 12px; padding: 12px 14px; background: #fff; font-family: Arial, sans-serif; font-size: 16px;">
+      <option value="full">Volledige drankenlijst</option>
+      <option value="light">Light</option>
+      <option value="classic">Lux</option>
+      <option value="classic">Gold</option>
+      <option value="diamond">Diamond</option>
+    </select>
+  </div>
     </div>
 
     <div class="grid" id="drinkGrid"></div>
