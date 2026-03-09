@@ -47,24 +47,26 @@
       width: min(95vw, 560px);
       padding: 20px;
     }
-    .auth-links { display: flex; gap: 14px; font-size: .9rem; margin: 8px 0 12px; }
+    .auth-links { display: flex; gap: 14px; font-size: 16px; margin: 8px 0 12px; }
     .auth-links button {
       background: none; border: 0; padding: 0; cursor: pointer;
       color: #2f2f7d; text-decoration: underline;
     }
-    .help-text { font-size: .8rem; opacity: .9; margin-top: 10px; }
+    .help-text { font-size: 14px; opacity: .9; margin-top: 10px; }
 
-    .field label { display: block; font-weight: 700; font-size: .85rem; margin-bottom: 4px; color: #4b5563; }
+    .field label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 4px; color: #4b5563; }
     .field input, .field select {
       width: 100%; border: 1px solid #c9ced8; border-radius: 14px;
-      padding: 11px 12px; font: inherit; background: #fff;
+      padding: 11px 12px; font: inherit; font-size: 18px; background: #fff;
     }
 
-    .topbar { padding: 14px 22px; display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .header-card { position: relative; padding: 14px; margin-bottom: 8px; }
+
+    .topbar { padding: 0 8px; display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
     .brand h1 { margin: 0; font-size: clamp(3.3rem, 7vw, 5rem); line-height: .95; }
     .user-actions { display: flex; flex-direction: column; gap: 14px; align-items: end; }
     .user-row { font-size: 2.9rem; display: flex; align-items: center; gap: 14px; font-size: 2.9rem; }
-    .user-greeting { font-size: 2.9rem; font-weight: 500; }
+    .user-greeting { font-size: 16px; font-weight: 500; }
     .iconbar { display: flex; gap: 16px; }
     .icon-btn {
       border: 0; background: transparent; color: #000; cursor: pointer;
@@ -89,12 +91,35 @@
       grid-template-columns: 3.2fr 1.7fr 1fr 1fr;
       align-items: end;
     }
+    .menu-link:hover { background: #f3f4f6; }
 
     .grid-wrap { margin-top: 12px; padding: 14px; position: relative; }
     .grid-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     #formulaTitle { margin: 0; font-size: 3.8rem; }
     .action-btn {
       border: 0; border-radius: 14px; padding: 10px 16px; background: #111; color: #fff; font-weight: 700; cursor: pointer;
+    }
+    .pager { display: flex; gap: 8px; align-items: center; }
+
+    .category-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+    .category-chip {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .category-chip.active {
+      background: #111;
+      color: #fff;
+      border-color: #111;
     }
     .pager { display: flex; gap: 8px; align-items: center; }
 
@@ -107,11 +132,11 @@
       border: 0; border-radius: 14px; padding: 14px; color: var(--btn-text); min-height: 138px;
       box-shadow: var(--shadow); text-align: left; cursor: pointer; position: relative;
     }
-    .drink-title { font-size: 2.7rem; font-weight: 700; line-height: 1.02; }
-    .drink-sub { margin-top: 6px; font-size: 1.4rem; }
+    .drink-title { font-size: 1.8rem; font-weight: 600; line-height: 1.02; }
+    .drink-sub { margin-top: 6px; font-size: 16px; font-weight: 400; }
     .drink-meta {
       position: absolute; left: 12px; right: 12px; bottom: 8px; display: flex; justify-content: space-between;
-      font-size: 1.25rem; font-weight: 700;
+      font-size: 14px; font-weight: 400;
     }
 
     .bottom { margin-top: 14px; display: grid; grid-template-columns: 1.5fr .95fr; gap: 12px; }
@@ -153,8 +178,8 @@
     @media (max-width: 980px) {
       .event-box, .bottom { grid-template-columns: 1fr; }
       .settings-row { grid-template-columns: 1fr; }
-      .drink-title { font-size: 2rem; }
-      .user-greeting { font-size: 1.8rem; }
+      .drink-title { font-size: 1.8rem; }
+      .user-greeting { font-size: 16px; }
       #formulaTitle { font-size: 2.6rem; }
       #confirmCycleLabel { font-size: 2.8rem; }
       .icon-btn { font-size: 1.3rem; }
@@ -193,12 +218,13 @@
   </div>
 
   <div class="wrap">
-    <div class="topbar card" style="position: relative;">
+    <div class="header-card card">
+    <div class="topbar">
       <div class="brand"><h1>Velvet</h1></div>
       <div class="user-actions">
         <div class="user-row">
           <span class="user-greeting" id="userGreeting">Hallo</span>
-          <button class="icon-btn" id="accountBtn"><i class="fa-solid fa-user"></i></button>
+          <button class="icon-btn" id="accountBtn"><i class="fa-sharp fa-solid fa-circle-user"></i></button>
         </div>
         <div class="iconbar">
           <button class="icon-btn" id="undoBtn" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
@@ -210,19 +236,22 @@
       </div>
       <div class="account-menu hidden" id="accountMenu">
         <button class="menu-link" id="editProfileBtn">Gegevens wijzigen</button>
+        <button class="menu-link" id="menuSettingsBtn">Instellingen</button>
         <button class="menu-link" id="logoutBtn">Uitloggen</button>
       </div>
     </div>
 
-    <div class="event-box card">
+    <div class="event-box">
       <div class="field"><label>Naam event</label><input id="eventName" placeholder="Naam event" /></div>
       <div class="field"><label>Datum event</label><input type="date" id="eventDate" /></div>
-      <div class="field"><label>Drankenformule</label><select id="formulaSelect"><option value="light">Light</option><option value="volledige lijst">Volledige lijst</option></select></div>
+      <div class="field"><label>Drankenformule</label><select id="formulaSelect"><option value="volledige lijst" selected>Volledige lijst</option><option value="light">Light</option><option value="lux">Lux</option><option value="gold">Gold</option><option value="diamond">Diamond</option></select></div>
       <div class="field"><label>ID</label><select id="stationId"><option>Bar voor 1</option><option>Bar achter 1</option></select></div>
+    </div>
     </div>
 
     <div class="grid-wrap card">
-      <div class="grid-head"><h2 id="formulaTitle">Light</h2><div class="pager"><button class="action-btn" id="prevPageBtn">◀</button><button class="action-btn" id="nextPageBtn">▶</button><button class="action-btn" id="andersBtn">+ Nieuw artikel</button></div></div>
+      <div class="grid-head"><h2 id="formulaTitle">Volledige lijst</h2><div class="pager"><button class="action-btn" id="prevPageBtn">◀</button><button class="action-btn" id="nextPageBtn">▶</button><button class="action-btn" id="andersBtn">+ Nieuw artikel</button></div></div>
+      <div class="category-filters hidden" id="categoryFilters"></div>
       <div class="grid" id="drinkGrid"></div>
     </div>
 
@@ -273,6 +302,7 @@
     const AUTH_KEY = 'velvet-auth-v1';
     const SETTINGS_KEY = 'velvet-settings-v1';
     const POS_STATE_KEY = 'velvet-pos-v3';
+    const DEFAULT_SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycby9_vdbVD5YHhe-mAC9ss2CaAB4coe9TpzxXe5uvIFkPPTJ1xDLLxnqlommVx1ILSlO/exec';
 
     const categoryColors = {
       'Frisdranken': 'var(--frisdranken)',
@@ -285,19 +315,20 @@
     };
 
     const defaultDrinks = [
-      { id: 'cola', name: 'Cola', category: 'Frisdranken', stock: 24, count: 0, price: 2.8, formulas: ['light','volledige lijst'] },
-      { id: 'cola_zero', name: 'Cola Zero', category: 'Frisdranken', stock: 24, count: 0, price: 2.8, formulas: ['light','volledige lijst'] },
-      { id: 'pils', name: 'Pils', category: 'Bieren', stock: 46, count: 0, price: 3.2, formulas: ['light','volledige lijst'] },
-      { id: 'huiswijn_wit', name: 'Huiswijn wit', category: 'Wijnen', stock: 30, count: 0, price: 7, formulas: ['light','volledige lijst'] },
-      { id: 'huiswijn_rood', name: 'Huiswijn rood', category: 'Wijnen', stock: 30, count: 0, price: 7, formulas: ['light','volledige lijst'] },
-      { id: 'gin_tonic', name: 'Gin tonic', category: 'Nieuw', stock: 9999, count: 0, price: 0, formulas: ['light','volledige lijst'] },
-      { id: 'cocktail', name: 'Cocktail', category: 'Cocktails', stock: 9999, count: 0, price: 10, formulas: ['light','volledige lijst'] },
-      { id: 'sterk_fris', name: 'Sterk + fris', category: 'Sterk + fris', stock: 9999, count: 0, price: 11, formulas: ['light','volledige lijst'] },
-      { id: 'sterk', name: 'Sterke dranken', category: 'Sterke dranken', stock: 9999, count: 0, price: 12, formulas: ['light','volledige lijst'] }
+      { id: 'cola', name: 'Cola', category: 'Frisdranken', stock: 24, count: 0, price: 2.8, formulas: ['volledige lijst', 'light', 'lux', 'gold', 'diamond'] },
+      { id: 'cola_zero', name: 'Cola Zero', category: 'Frisdranken', stock: 24, count: 0, price: 2.8, formulas: ['volledige lijst', 'light', 'lux', 'gold', 'diamond'] },
+      { id: 'pils', name: 'Pils', category: 'Bieren', stock: 46, count: 0, price: 3.2, formulas: ['volledige lijst', 'light', 'lux', 'gold', 'diamond'] },
+      { id: 'huiswijn_wit', name: 'Huiswijn wit', category: 'Wijnen', stock: 30, count: 0, price: 7, formulas: ['volledige lijst', 'light', 'lux', 'gold', 'diamond'] },
+      { id: 'huiswijn_rood', name: 'Huiswijn rood', category: 'Wijnen', stock: 30, count: 0, price: 7, formulas: ['volledige lijst', 'light', 'lux', 'gold', 'diamond'] },
+      { id: 'gin_tonic', name: 'Gin tonic', category: 'Nieuw', stock: 9999, count: 0, price: 0, formulas: ['volledige lijst', 'lux', 'gold', 'diamond'] },
+      { id: 'cocktail', name: 'Cocktail', category: 'Cocktails', stock: 9999, count: 0, price: 10, formulas: ['volledige lijst', 'gold', 'diamond'] },
+      { id: 'sterk_fris', name: 'Sterk + fris', category: 'Sterk + fris', stock: 9999, count: 0, price: 11, formulas: ['volledige lijst', 'lux', 'gold', 'diamond'] },
+      { id: 'sterk', name: 'Sterke dranken', category: 'Sterke dranken', stock: 9999, count: 0, price: 12, formulas: ['volledige lijst', 'lux', 'gold', 'diamond'] }
     ];
 
     const state = JSON.parse(localStorage.getItem(POS_STATE_KEY) || 'null') || { drinks: defaultDrinks, pendingConfirmValue: 0, actionHistory: [] };
     let currentPage = 0;
+    let selectedCategory = 'all';
     const PAGE_SIZE = 10;
 
     function seedAdmin() {
@@ -427,8 +458,51 @@
 
     function getFilteredDrinks() {
       const formula = document.getElementById('formulaSelect').value;
-      return state.drinks.filter(d => d.formulas.includes(formula));
+      let filtered = state.drinks.filter(d => d.formulas.includes(formula));
+      if (formula === 'volledige lijst' && selectedCategory !== 'all') {
+        filtered = filtered.filter(d => d.category === selectedCategory);
+      }
+      return filtered;
     }
+
+    function renderCategoryFilters() {
+      const formula = document.getElementById('formulaSelect').value;
+      const container = document.getElementById('categoryFilters');
+      if (formula !== 'volledige lijst') {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        return;
+      }
+
+      const categories = [...new Set(state.drinks.filter(d => d.formulas.includes('volledige lijst')).map(d => d.category))];
+      if (selectedCategory !== 'all' && !categories.includes(selectedCategory)) selectedCategory = 'all';
+
+      container.classList.remove('hidden');
+      container.innerHTML = '';
+
+      const allBtn = document.createElement('button');
+      allBtn.className = `category-chip ${selectedCategory === 'all' ? 'active' : ''}`;
+      allBtn.textContent = 'Alles';
+      allBtn.onclick = () => {
+        selectedCategory = 'all';
+        currentPage = 0;
+        renderAll();
+      };
+      container.appendChild(allBtn);
+
+      categories.forEach(category => {
+        const btn = document.createElement('button');
+        btn.className = `category-chip ${selectedCategory === category ? 'active' : ''}`;
+        btn.textContent = category;
+        btn.onclick = () => {
+          selectedCategory = category;
+          currentPage = 0;
+          renderAll();
+        };
+        container.appendChild(btn);
+      });
+    }
+
     function getPagedDrinks() {
       const drinks = getFilteredDrinks();
       const pages = Math.max(1, Math.ceil(drinks.length / PAGE_SIZE));
@@ -485,11 +559,12 @@
       document.getElementById('confirmCycleLabel').textContent = `Totaal: € ${state.pendingConfirmValue.toFixed(2).replace('.', ',')}`;
       document.getElementById('eventRevenue').textContent = `€ ${revenue.toFixed(2).replace('.', ',')}`;
       document.getElementById('eventCount').textContent = `${count}`;
-      document.getElementById('formulaTitle').textContent = document.getElementById('formulaSelect').value === 'light' ? 'Light' : 'Volledige lijst';
+      const formula = document.getElementById('formulaSelect').value;
+      document.getElementById('formulaTitle').textContent = formula.charAt(0).toUpperCase() + formula.slice(1);
     }
 
     function persistAndRender() { localStorage.setItem(POS_STATE_KEY, JSON.stringify(state)); renderAll(); }
-    function renderAll() { renderGrid(); renderSummary(); renderTotals(); }
+    function renderAll() { renderCategoryFilters(); renderGrid(); renderSummary(); renderTotals(); }
 
     function confirmOrder() {
       if (state.pendingConfirmValue <= 0) return;
@@ -497,7 +572,57 @@
       persistAndRender();
     }
 
-    function saveEventSnapshot() { localStorage.setItem('velvet-archive', JSON.stringify({ at: Date.now(), state })); alert('Lokaal opgeslagen.'); }
+    function buildRowsForExport() {
+      const currentUser = getCurrentUser();
+      const eventName = document.getElementById('eventName').value.trim() || 'Naam event';
+      const eventDate = document.getElementById('eventDate').value || new Date().toISOString().slice(0, 10);
+      const stationId = document.getElementById('stationId').value;
+      const formula = document.getElementById('formulaSelect').value;
+      return state.drinks
+        .filter(d => d.count > 0)
+        .map(d => ({
+          eventName,
+          eventDate,
+          stationId,
+          formula,
+          userEmail: currentUser?.email || '',
+          userFirstName: currentUser?.firstName || '',
+          drink: d.name,
+          category: d.category,
+          amount: d.count,
+          price: d.price,
+          total: +(d.count * d.price).toFixed(2),
+          stockAfter: Math.max(0, d.stock - d.count)
+        }));
+    }
+
+    async function saveEventSnapshot() {
+      const rows = buildRowsForExport();
+      localStorage.setItem('velvet-archive', JSON.stringify({ at: Date.now(), rows }));
+
+      const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+      const endpoint = (settings.sheetEndpoint || DEFAULT_SCRIPT_ENDPOINT || '').trim();
+
+      if (!endpoint) return alert('Geen Google app script URL ingesteld.');
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source: 'velvet-pos',
+            createdAt: new Date().toISOString(),
+            rows
+          })
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        alert('Lokaal opgeslagen en doorgestuurd naar Google web app.');
+      } catch (error) {
+        console.error('Google web app sync error', error);
+        alert('Lokaal opgeslagen, maar doorsturen naar Google web app is mislukt.');
+      }
+    }
+
     function exportCsv() { alert('CSV export gestart (demo).'); }
     function restoreBackup() { alert('Backup herstellen (demo).'); }
     function undoLast() { const id = state.actionHistory.pop(); if (id) decrementDrink(id); }
@@ -507,7 +632,7 @@
       if (!me) return;
       document.getElementById('settingsModal').classList.remove('hidden');
       const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
-      document.getElementById('sheetEndpoint').value = settings.sheetEndpoint || '';
+      document.getElementById('sheetEndpoint').value = settings.sheetEndpoint || DEFAULT_SCRIPT_ENDPOINT;
       document.getElementById('dbLink').value = settings.dbLink || '';
       document.getElementById('stockLink').value = settings.stockLink || '';
       const noEdit = me.role === 'administrator';
@@ -518,7 +643,7 @@
     function saveSettings() {
       const me = getCurrentUser();
       const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
-      if (me.role === 'beheerder') settings.sheetEndpoint = document.getElementById('sheetEndpoint').value.trim();
+      if (me.role === 'beheerder') settings.sheetEndpoint = document.getElementById('sheetEndpoint').value.trim() || DEFAULT_SCRIPT_ENDPOINT;
       settings.dbLink = document.getElementById('dbLink').value.trim();
       settings.stockLink = document.getElementById('stockLink').value.trim();
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
@@ -547,6 +672,13 @@
 
     document.getElementById('accountBtn').onclick = () => document.getElementById('accountMenu').classList.toggle('hidden');
     document.getElementById('logoutBtn').onclick = logout;
+    const menuSettingsBtn = document.getElementById('menuSettingsBtn');
+    if (menuSettingsBtn) {
+      menuSettingsBtn.onclick = () => {
+        document.getElementById('accountMenu').classList.add('hidden');
+        openSettings();
+      };
+    }
     document.getElementById('editProfileBtn').onclick = () => {
       const user = getCurrentUser();
       if (!user) return;
@@ -565,12 +697,16 @@
     document.getElementById('restoreBtn').onclick = restoreBackup;
     document.getElementById('undoBtn').onclick = undoLast;
     document.getElementById('confirmBtn').onclick = confirmOrder;
-    document.getElementById('formulaSelect').onchange = renderAll;
+    document.getElementById('formulaSelect').onchange = () => {
+      currentPage = 0;
+      selectedCategory = 'all';
+      renderAll();
+    };
     document.getElementById('andersBtn').onclick = () => {
       const name = prompt('Naam nieuw artikel');
       if (!name) return;
       const price = Number((prompt('Prijs?','0') || '0').replace(',', '.')) || 0;
-      state.drinks.push({ id: `custom_${Date.now()}`, name, category: 'Nieuw', stock: 9999, count: 1, price, formulas: ['light','volledige lijst'] });
+      state.drinks.push({ id: `custom_${Date.now()}`, name, category: 'Nieuw', stock: 9999, count: 1, price, formulas: ['volledige lijst', 'light', 'lux', 'gold', 'diamond'] });
       state.pendingConfirmValue += price;
       persistAndRender();
     };
@@ -583,6 +719,12 @@
     document.getElementById('prevPageBtn').onclick = () => { currentPage = Math.max(0, currentPage - 1); renderGrid(); };
     document.getElementById('nextPageBtn').onclick = () => { const pages = getPagedDrinks().pages; currentPage = Math.min(pages - 1, currentPage + 1); renderGrid(); };
     document.getElementById('eventDate').value = new Date().toISOString().slice(0,10);
+
+    const bootSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+    if (!bootSettings.sheetEndpoint) {
+      bootSettings.sheetEndpoint = DEFAULT_SCRIPT_ENDPOINT;
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(bootSettings));
+    }
 
     hydrateAfterLogin();
   </script>
