@@ -5,110 +5,293 @@
   <meta name="author" content="Janis Angele">
   <meta name="creator" content="Janis Angele">
   <meta name="copyright" content="© 2026 Mark-Up BV">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Velvet POS</title>
   <style>
     :root {
-      --bg: #ececec;
+      --bg: #f4f6fb;
       --card: #ffffff;
-      --text: #111111;
-      --muted: #666;
-      --shadow: 0 6px 18px rgba(0, 0, 0, .12);
+      --text: #161a23;
+      --muted: #667085;
+      --brand: #6b5cff;
+      --ok: #2e7d32;
+      --border: #e4e7ec;
+      --shadow: 0 12px 28px rgba(15, 23, 42, .10);
       --radius: 18px;
     }
+
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; background: var(--bg); color: var(--text); font-family: Georgia, serif; }
-    .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #eef1ff 0%, #f4f6fb 35%, #f4f6fb 100%);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
     .hidden { display: none !important; }
+    .wrap { max-width: 1320px; margin: 0 auto; padding: 16px; }
 
     .login-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 30;
+      position: fixed;
+      inset: 0;
+      background: rgba(16, 24, 40, .45);
+      display: grid;
+      place-items: center;
+      z-index: 120;
+      backdrop-filter: blur(4px);
     }
+
     .login-card {
-      width: min(92vw, 440px); background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 18px;
+      width: min(92vw, 440px);
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
     }
-    .login-card h2 { margin: 0 0 12px; }
 
-    .topbar, .toolbar, .event-box { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 12px; }
-    .topbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .toolbar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-    .event-box { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .topbar, .event-box, .panel, .grid-wrap {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, .8);
+    }
 
-    button, select, input { font: inherit; }
-    .action-btn { border: 0; background: #f2f2f2; border-radius: 12px; padding: 12px; cursor: pointer; }
-    .primary { background: #2a83ff; color: #fff; }
+    .topbar {
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
 
-    .field label { font-family: Arial, sans-serif; font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
-    .field input, .field select { width: 100%; border: 1px solid #d8d8d8; border-radius: 10px; padding: 10px; font-family: Arial, sans-serif; }
+    .brand h1 { margin: 0; font-size: clamp(2rem, 4vw, 2.8rem); letter-spacing: .2px; }
+    .brand p { margin: 4px 0 0; color: var(--muted); font-size: .95rem; }
 
-    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-    .tab-btn { border: 0; border-radius: 999px; padding: 8px 12px; cursor: pointer; font-family: Arial, sans-serif; background: #e5e5e5; }
-    .tab-btn.active { background: #111; color: #fff; }
+    .menu-area { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .icon-btn, .action-btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #f2f4f7;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 600;
+    }
 
-    .grid-wrap { position: relative; }
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      display: inline-grid;
+      place-items: center;
+      font-size: 1.05rem;
+      position: relative;
+    }
+
+    .icon-btn[data-tip]:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      top: 47px;
+      right: 0;
+      background: #111827;
+      color: #fff;
+      font-size: .72rem;
+      white-space: nowrap;
+      padding: 5px 8px;
+      border-radius: 8px;
+      z-index: 12;
+    }
+
+    .primary { background: var(--brand); color: #fff; }
+
+    .settings-pop {
+      position: absolute;
+      right: 16px;
+      top: 76px;
+      width: min(88vw, 340px);
+      padding: 12px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      z-index: 30;
+    }
+
+    .field label { display: block; font-size: .78rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 11px;
+      font: inherit;
+      background: #fff;
+    }
+
+    .event-box {
+      margin-bottom: 12px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .grid-wrap { position: relative; padding: 14px; }
+    .grid-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pager { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .pager-info { font-size: .86rem; color: var(--muted); min-width: 64px; text-align: center; }
+
     .anders-btn {
-      position: absolute; top: -8px; right: 0; z-index: 5;
-      border: 0; background: #111; color: #fff; border-radius: 12px; padding: 10px 14px; cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: #111;
+      color: #fff;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      z-index: 4;
     }
 
-    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-    .drink-btn {
-      border: 0; border-radius: var(--radius); box-shadow: var(--shadow); min-height: 140px;
-      padding: 12px; cursor: pointer; text-align: left; position: relative; color: #111;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+      padding-top: 34px;
     }
-    .drink-title { font-size: 24px; line-height: 1.1; }
-    .drink-sub { font-family: Arial, sans-serif; font-size: 12px; margin-top: 6px; opacity: .9; }
-    .drink-meta { position: absolute; left: 10px; right: 10px; bottom: 8px; display: flex; justify-content: space-between; font-family: Arial, sans-serif; font-size: 13px; }
+
+    .drink-btn {
+      border: 0;
+      border-radius: 16px;
+      min-height: 138px;
+      padding: 12px;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, .12);
+      cursor: pointer;
+      text-align: left;
+      position: relative;
+      color: #0f172a;
+    }
+
+    .drink-title { font-size: 1.45rem; line-height: 1.15; font-weight: 700; }
+    #formulaTitle { font-size: 1.35rem; }
+    .drink-sub { font-size: .86rem; margin-top: 6px; opacity: .9; }
+    .drink-meta {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: .83rem;
+      font-weight: 600;
+    }
 
     .bottom { display: grid; grid-template-columns: 1.2fr .8fr; gap: 12px; margin-top: 14px; }
-    .panel { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 14px; }
-    table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; }
-    th, td { padding: 8px 6px; border-bottom: 1px solid #efefef; text-align: left; }
+    .panel { padding: 14px; }
+    .panel h2 { margin-top: 0; margin-bottom: 12px; }
 
-    .totals { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font-family: Arial, sans-serif; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    th, td { padding: 8px 6px; border-bottom: 1px solid #eef2f6; text-align: left; }
+
+    .summary-action { display: flex; gap: 8px; }
+    .mini-btn { min-width: 34px; padding: 8px 10px; }
+
+    .actions-panel {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .confirm-btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      background: var(--ok);
+      color: #fff;
+      font: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .small-totals {
+      display: grid;
+      gap: 8px;
+      color: #334155;
+      font-size: .9rem;
+      background: #f8fafc;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
 
     @media (max-width: 980px) {
-      .toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .event-box { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .bottom { grid-template-columns: 1fr; }
+      .settings-pop { top: 66px; }
     }
-    @media (max-width: 560px) {
-      .event-box, .toolbar, .grid { grid-template-columns: 1fr; }
-      .drink-title { font-size: 20px; }
+
+    @media (max-width: 640px) {
+      .wrap { padding: 10px; }
+      .topbar { padding: 12px; align-items: flex-start; }
+      .menu-area { width: 100%; justify-content: flex-start; }
+      .event-box { grid-template-columns: 1fr; padding: 10px; }
+      .grid-wrap { padding: 10px; }
+      .grid { grid-template-columns: 1fr; }
+      .drink-title { font-size: 1.28rem; }
+      #formulaTitle { font-size: 1.15rem; }
     }
   </style>
 </head>
 <body>
   <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
-      <h2>Login Velvet POS</h2>
+      <h2 style="margin:0 0 10px;">Login Velvet POS</h2>
       <div class="field">
         <label for="loginPin">PIN</label>
         <input id="loginPin" type="password" placeholder="Voer PIN in" />
       </div>
-      <p style="font-family: Arial, sans-serif; color: #666; font-size: 13px;">Standaard PIN: <b>Velvet2026</b> (wijzig in code of via externe auth).</p>
+      <p style="color: var(--muted); font-size: .85rem;">Standaard PIN: <b>Velvet2026</b>.</p>
       <button class="action-btn primary" id="loginBtn" style="width:100%;">Inloggen</button>
     </div>
   </div>
 
   <div class="wrap">
     <div class="topbar">
-      <div>
-        <h1 style="margin:0;">Velvet drankenteller</h1>
-        <div style="font-family: Arial, sans-serif; color: #666; font-size: 13px;">Filter op formule, tel stock en exporteer per medewerker-ID.</div>
+      <div class="brand">
+        <h1>Velvet</h1>
+        <p>Modern en responsive kassascherm voor mobiel, tablet en desktop.</p>
       </div>
-      <div class="totals" style="margin:0;">
-        <span id="sessionTotal">Sessie: € 0,00</span>
-        <span id="globalTotal">Totaal: 0 dranken</span>
-      </div>
-    </div>
 
-    <div class="toolbar">
-      <button class="action-btn" id="saveBtn">Bewaar</button>
-      <button class="action-btn" id="exportBtn">Export (CSV)</button>
-      <button class="action-btn" id="resetBtn">Reset</button>
-      <button class="action-btn" id="restoreBtn">Restore</button>
+      <div class="menu-area">
+        <button class="icon-btn" id="saveBtn" data-tip="Save" aria-label="Save">💾</button>
+        <button class="icon-btn" id="exportBtn" data-tip="Exporteer" aria-label="Exporteer">📤</button>
+        <button class="icon-btn" id="resetBtn" data-tip="Reset" aria-label="Reset">↩️</button>
+        <button class="icon-btn" id="restoreBtn" data-tip="Backup" aria-label="Backup">🗄️</button>
+        <button class="icon-btn" id="settingsToggle" data-tip="Instellingen" aria-label="Instellingen">⚙️</button>
+        <button class="icon-btn" id="accountBtn" data-tip="Account" aria-label="Account">👤</button>
+      </div>
+
+      <div class="settings-pop hidden" id="settingsMenu">
+        <div class="field">
+          <label for="sheetEndpoint">Google Apps Script URL</label>
+          <input id="sheetEndpoint" placeholder="https://script.google.com/..." />
+        </div>
+        <button class="action-btn" id="logoutBtn" style="margin-top:8px; width: 100%;">Logout</button>
+      </div>
     </div>
 
     <div class="event-box">
@@ -123,7 +306,7 @@
           <option value="diamond">Diamond</option>
         </select>
       </div>
-      <div class="field"><label for="stationId">Personeel-ID</label>
+      <div class="field"><label for="stationId">ID</label>
         <select id="stationId">
           <option>Bar voor 1</option>
           <option>Bar achter 1</option>
@@ -132,44 +315,61 @@
           <option>Zaal 2</option>
         </select>
       </div>
-      <div class="field"><label for="staffName">Naam personeel</label><input id="staffName" placeholder="bv. Bob"></div>
-      <div class="field"><label for="sheetEndpoint">Google Apps Script URL</label><input id="sheetEndpoint" placeholder="optioneel: https://script.google.com/..."></div>
-      <div class="field"><label for="searchDrink">Zoek / auto-aanvullen</label><input id="searchDrink" list="drinkSuggestions" placeholder="Typ dranknaam"></div>
-      <div class="field"><label>&nbsp;</label><button class="action-btn" id="addSearchDrink" style="width:100%;">Voeg toe als 'Anders'</button></div>
+      <div class="field"><label for="staffName">Naam medewerker</label><input id="staffName" placeholder="bv. Bob"></div>
     </div>
 
-    <datalist id="drinkSuggestions"></datalist>
-
-    <div class="tabs" id="categoryTabs"></div>
-
     <div class="grid-wrap">
-      <button class="anders-btn" id="andersBtn">+ Anders</button>
+      <button class="anders-btn" id="andersBtn">+ Nieuw artikel</button>
+      <div class="grid-head">
+        <strong id="formulaTitle">Volledige lijst</strong>
+        <div class="pager">
+          <button class="action-btn" id="prevPageBtn">◀</button>
+          <span class="pager-info" id="pageInfo">1 / 1</span>
+          <button class="action-btn" id="nextPageBtn">▶</button>
+        </div>
+      </div>
       <div class="grid" id="drinkGrid"></div>
     </div>
 
     <div class="bottom">
       <div class="panel">
-        <h2 style="margin-top:0;">Overzicht</h2>
+        <h2>Overzicht</h2>
         <table>
           <thead><tr><th>Drank</th><th>Aantal</th><th>Stock na</th><th>€</th><th>Actie</th></tr></thead>
           <tbody id="summaryBody"></tbody>
         </table>
       </div>
-      <div class="panel">
-        <h2 style="margin-top:0;">Acties</h2>
-        <button class="action-btn" id="undoBtn">Undo laatste tik</button>
-        <button class="action-btn" id="undoSessionBtn">Undo volledige intiksessie</button>
-        <p style="font-family:Arial,sans-serif;color:#666;">Reset vraagt expliciet om het woord <b>RESET</b> in te typen. Restore zet de laatste backup terug.</p>
+      <div class="panel actions-panel">
+        <div style="text-align:right; font-weight:700;">Totaal: <span id="confirmCycleTotal">€ 0,00</span></div>
+        <div>
+          <button class="confirm-btn" id="confirmBtn">Bevestig</button>
+        </div>
+        <div class="small-totals">
+          <div style="display:flex; justify-content:space-between; gap:8px;">
+            <span><strong>Omzet event:</strong> <span id="eventRevenue">€ 0,00</span></span>
+            <span><strong>Dranken event:</strong> <span id="eventCount">0</span></span>
+          </div>
+        </div>
       </div>
     </div>
+
   </div>
 
   <script>
     const STORAGE_KEY = 'velvet-pos-v2';
-    const HISTORY_KEY = 'velvet-pos-history-v2';
     const ARCHIVE_KEY = 'velvet-pos-archive-v2';
     const BACKUP_KEY = 'velvet-pos-backup-v2';
     const LOGIN_PIN = 'Velvet2026';
+    const PAGE_SIZE = 12;
+
+    const categoryColors = {
+      'Frisdranken': '#d9f99d',
+      'Bieren': '#fde68a',
+      'Wijnen': '#fef08a',
+      'Cocktails': '#ddd6fe',
+      'Sterke dranken': '#fecdd3',
+      'Anders': '#e2e8f0'
+    };
 
     const defaultDrinks = [
       { id: 'cola', name: 'Cola', category: 'Frisdranken', color: '#8bc34a', stock: 24, count: 0, price: 2.8, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'fris', exactBrand: true, stockPool: 'cola' },
@@ -178,13 +378,13 @@
       { id: 'ginger_ale', name: 'Ginger Ale', category: 'Frisdranken', color: '#c5e1a5', stock: 18, count: 0, price: 2.8, formulas: ['volledige lijst','lux','gold','diamond'], type: 'fris', exactBrand: false, stockPool: 'mix_fris' },
       { id: 'pils', name: 'Pils', category: 'Bieren', color: '#ffeb3b', stock: 48, count: 0, price: 3.2, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'bier', exactBrand: true, stockPool: 'pils' },
       { id: 'ipa', name: 'IPA', category: 'Bieren', color: '#fdd835', stock: 24, count: 0, price: 3.8, formulas: ['volledige lijst','gold','diamond'], type: 'bier', exactBrand: true, stockPool: 'ipa' },
-      { id: 'wit', name: 'Huiswijn wit', category: 'Wijnen', color: '#fff59d', stock: 30, count: 0, price: 4.4, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'wijn', exactBrand: true, stockPool: 'wijn_wit' },
-      { id: 'rood', name: 'Huiswijn rood', category: 'Wijnen', color: '#ffe082', stock: 30, count: 0, price: 4.4, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'wijn', exactBrand: true, stockPool: 'wijn_rood' },
-      { id: 'gin_tonic', name: 'Gin Tonic', category: 'Cocktails', color: '#81d4fa', stock: 40, count: 0, price: 9.5, formulas: ['volledige lijst','gold','diamond'], type: 'cocktail', exactBrand: false, stockPool: 'cocktail' },
-      { id: 'mojito', name: 'Mojito', category: 'Cocktails', color: '#4fc3f7', stock: 35, count: 0, price: 10, formulas: ['volledige lijst','diamond'], type: 'cocktail', exactBrand: false, stockPool: 'cocktail' },
+      { id: 'wit', name: 'Huiswijn wit', category: 'Wijnen', color: '#f9c2d1', stock: 30, count: 0, price: 4.4, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'wijn', exactBrand: true, stockPool: 'wijn_wit' },
+      { id: 'rood', name: 'Huiswijn rood', category: 'Wijnen', color: '#f7a8bb', stock: 30, count: 0, price: 4.4, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'wijn', exactBrand: true, stockPool: 'wijn_rood' },
+      { id: 'gin_tonic', name: 'Gin Tonic', category: 'Cocktails', color: '#c4b5fd', stock: 40, count: 0, price: 9.5, formulas: ['volledige lijst','gold','diamond'], type: 'cocktail', exactBrand: false, stockPool: 'cocktail' },
+      { id: 'mojito', name: 'Mojito', category: 'Cocktails', color: '#a78bfa', stock: 35, count: 0, price: 10, formulas: ['volledige lijst','diamond'], type: 'cocktail', exactBrand: false, stockPool: 'cocktail' },
       { id: 'vodka', name: 'Vodka', category: 'Sterke dranken', color: '#ef9a9a', stock: 20, count: 0, price: 7, formulas: ['volledige lijst','lux','gold','diamond'], type: 'sterk', exactBrand: true, stockPool: 'vodka' },
       { id: 'whisky', name: 'Whisky', category: 'Sterke dranken', color: '#e57373', stock: 20, count: 0, price: 8.2, formulas: ['volledige lijst','gold','diamond'], type: 'sterk', exactBrand: true, stockPool: 'whisky' },
-      { id: 'anders', name: 'Anders', category: 'Anders', color: '#bdbdbd', stock: 9999, count: 0, price: 0, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'custom', exactBrand: true, stockPool: 'anders' }
+      { id: 'anders', name: 'Anders', category: 'Anders', color: '#d1c4e9', stock: 9999, count: 0, price: 0, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'custom', exactBrand: true, stockPool: 'anders' }
     ];
 
     const recipes = {
@@ -193,25 +393,26 @@
     };
 
     let state = loadState();
-    let selectedCategory = 'Frisdranken';
+    let currentPage = 0;
+    let pendingConfirmValue = 0;
 
     function loadState() {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { drinks: structuredClone(defaultDrinks), actionHistory: [], sessionActions: [], archivedRows: [] };
+      if (!raw) return { drinks: structuredClone(defaultDrinks), actionHistory: [], sessionActions: [] };
       try {
         const parsed = JSON.parse(raw);
         return {
           drinks: Array.isArray(parsed.drinks) ? parsed.drinks : structuredClone(defaultDrinks),
           actionHistory: Array.isArray(parsed.actionHistory) ? parsed.actionHistory : [],
-          sessionActions: Array.isArray(parsed.sessionActions) ? parsed.sessionActions : [],
-          archivedRows: Array.isArray(parsed.archivedRows) ? parsed.archivedRows : []
+          sessionActions: Array.isArray(parsed.sessionActions) ? parsed.sessionActions : []
         };
       } catch {
-        return { drinks: structuredClone(defaultDrinks), actionHistory: [], sessionActions: [], archivedRows: [] };
+        return { drinks: structuredClone(defaultDrinks), actionHistory: [], sessionActions: [] };
       }
     }
 
     function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
     function todayIso() {
       const d = new Date();
       const tzOffset = d.getTimezoneOffset() * 60000;
@@ -220,13 +421,16 @@
 
     function getFilteredDrinks() {
       const formula = document.getElementById('formulaSelect').value;
-      return state.drinks.filter(d => d.formulas.includes(formula) && (selectedCategory === 'Alles' || d.category === selectedCategory));
+      return state.drinks.filter(d => d.id !== 'anders' && d.formulas.includes(formula));
     }
 
-    function getCategoriesForFormula() {
-      const formula = document.getElementById('formulaSelect').value;
-      const cats = [...new Set(state.drinks.filter(d => d.formulas.includes(formula)).map(d => d.category))];
-      return cats.filter(c => c !== 'Anders');
+    function getPagedDrinks() {
+      const drinks = getFilteredDrinks();
+      const pages = Math.max(1, Math.ceil(drinks.length / PAGE_SIZE));
+      if (currentPage >= pages) currentPage = pages - 1;
+      const start = currentPage * PAGE_SIZE;
+      const end = start + PAGE_SIZE;
+      return { drinks: drinks.slice(start, end), pages };
     }
 
     function decrementPool(drink) {
@@ -245,16 +449,15 @@
       });
     }
 
-    function incrementDrink(drinkId, isUndo = false) {
+    function incrementDrink(drinkId) {
       const drink = state.drinks.find(d => d.id === drinkId);
       if (!drink) return;
-      if (!isUndo) {
-        state.actionHistory.push({ drinkId, at: Date.now() });
-        state.sessionActions.push({ drinkId, at: Date.now() });
-      }
+      state.actionHistory.push({ drinkId, at: Date.now() });
+      state.sessionActions.push({ drinkId, at: Date.now() });
       drink.count += 1;
       decrementPool(drink);
       applyRecipe(drink);
+      pendingConfirmValue += drink.price;
       saveState();
       renderAll();
     }
@@ -262,42 +465,35 @@
     function decrementDrink(drinkId) {
       const drink = state.drinks.find(d => d.id === drinkId);
       if (!drink) return;
-      drink.count = Math.max(0, drink.count - 1);
+      if (drink.count > 0) {
+        drink.count -= 1;
+        pendingConfirmValue = Math.max(0, pendingConfirmValue - drink.price);
+      }
       saveState();
       renderAll();
-    }
-
-    function renderTabs() {
-      const tabs = document.getElementById('categoryTabs');
-      tabs.innerHTML = '';
-      const categories = getCategoriesForFormula();
-      if (!categories.includes(selectedCategory)) selectedCategory = categories[0] || 'Alles';
-      categories.forEach(cat => {
-        const btn = document.createElement('button');
-        btn.className = `tab-btn ${cat === selectedCategory ? 'active' : ''}`;
-        btn.textContent = cat;
-        btn.addEventListener('click', () => { selectedCategory = cat; renderAll(); });
-        tabs.appendChild(btn);
-      });
     }
 
     function renderGrid() {
       const grid = document.getElementById('drinkGrid');
       grid.innerHTML = '';
-      getFilteredDrinks().forEach(drink => {
-        if (drink.id === 'anders') return;
+      const paged = getPagedDrinks();
+      paged.drinks.forEach(drink => {
         const stockAfter = Math.max(0, drink.stock - drink.count);
         const btn = document.createElement('button');
         btn.className = 'drink-btn';
-        btn.style.background = drink.color;
+        btn.style.background = drink.color || categoryColors[drink.category] || '#e2e8f0';
         btn.innerHTML = `
           <div class="drink-title">${drink.name}</div>
-          <div class="drink-sub">€ ${drink.price.toFixed(2)} • ${drink.type}</div>
+          <div class="drink-sub">€ ${drink.price.toFixed(2)} • ${drink.category}</div>
           <div class="drink-meta"><span>x ${Math.floor(drink.count)}</span><span>stock: ${Math.floor(stockAfter)}</span></div>
         `;
         btn.addEventListener('click', () => incrementDrink(drink.id));
         grid.appendChild(btn);
       });
+
+      document.getElementById('pageInfo').textContent = `${currentPage + 1} / ${paged.pages}`;
+      document.getElementById('prevPageBtn').disabled = currentPage <= 0;
+      document.getElementById('nextPageBtn').disabled = currentPage >= (paged.pages - 1);
     }
 
     function renderSummary() {
@@ -310,7 +506,12 @@
           <td>${Math.floor(d.count)}</td>
           <td>${Math.floor(Math.max(0, d.stock - d.count))}</td>
           <td>€ ${(d.count * d.price).toFixed(2)}</td>
-          <td><button class="action-btn" data-a="minus">-1</button> <button class="action-btn" data-a="plus">+1</button></td>
+          <td>
+            <div class="summary-action">
+              <button class="action-btn mini-btn" data-a="minus">-</button>
+              <button class="action-btn mini-btn" data-a="plus">+</button>
+            </div>
+          </td>
         `;
         tr.querySelector('[data-a="minus"]').addEventListener('click', () => decrementDrink(d.id));
         tr.querySelector('[data-a="plus"]').addEventListener('click', () => incrementDrink(d.id));
@@ -320,43 +521,50 @@
     }
 
     function renderTotals() {
-      const sessionTotal = state.drinks.reduce((sum, d) => sum + d.count * d.price, 0);
-      const globalCount = state.drinks.reduce((sum, d) => sum + d.count, 0);
-      document.getElementById('sessionTotal').textContent = `Sessie: € ${sessionTotal.toFixed(2).replace('.', ',')}`;
-      document.getElementById('globalTotal').textContent = `Totaal: ${Math.floor(globalCount)} dranken`;
+      const eventRevenue = state.drinks.reduce((sum, d) => sum + d.count * d.price, 0);
+      const eventCount = state.drinks.reduce((sum, d) => sum + d.count, 0);
+
+      document.getElementById('confirmCycleTotal').textContent = `€ ${pendingConfirmValue.toFixed(2).replace('.', ',')}`;
+      document.getElementById('eventRevenue').textContent = `€ ${eventRevenue.toFixed(2).replace('.', ',')}`;
+      document.getElementById('eventCount').textContent = `${Math.floor(eventCount)}`;
     }
 
-    function renderSuggestions() {
-      const list = document.getElementById('drinkSuggestions');
-      list.innerHTML = '';
-      state.drinks.forEach(d => {
-        const opt = document.createElement('option');
-        opt.value = d.name;
-        list.appendChild(opt);
-      });
+    function renderFormulaTitle() {
+      const formula = document.getElementById('formulaSelect').value;
+      document.getElementById('formulaTitle').textContent = formula.charAt(0).toUpperCase() + formula.slice(1);
     }
 
     function renderAll() {
-      renderTabs();
+      renderFormulaTitle();
       renderGrid();
       renderSummary();
       renderTotals();
-      renderSuggestions();
     }
 
-    function addAndersFromInput(prefill = '') {
-      const name = prompt('Naam drank (nieuw of bestaand):', prefill || document.getElementById('searchDrink').value.trim());
+    function addAndersFromInput() {
+      const name = prompt('Naam drank (nieuw of bestaand):', '');
       if (!name) return;
       const priceInput = prompt('Prijs van deze drank?', '0');
       const price = Number.parseFloat((priceInput || '0').replace(',', '.')) || 0;
       const id = `custom_${Date.now()}`;
+      const formula = document.getElementById('formulaSelect').value;
       const newDrink = {
-        id, name, category: selectedCategory || 'Anders', color: '#d1c4e9', stock: 9999, count: 1, price,
-        formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'custom', exactBrand: true, stockPool: id
+        id,
+        name,
+        category: 'Anders',
+        color: '#111111',
+        stock: 9999,
+        count: 1,
+        price,
+        formulas: ['volledige lijst','light','lux','gold','diamond'].includes(formula) ? [formula, 'volledige lijst'] : ['volledige lijst'],
+        type: 'custom',
+        exactBrand: true,
+        stockPool: id
       };
       state.drinks.push(newDrink);
       state.actionHistory.push({ drinkId: id, at: Date.now() });
       state.sessionActions.push({ drinkId: id, at: Date.now() });
+      pendingConfirmValue += newDrink.price;
       saveState();
       renderAll();
     }
@@ -377,7 +585,10 @@
       }, {});
       Object.entries(grouped).forEach(([drinkId, n]) => {
         const drink = state.drinks.find(d => d.id === drinkId);
-        if (drink) drink.count = Math.max(0, drink.count - n);
+        if (!drink) return;
+        const reduceBy = Math.min(drink.count, n);
+        drink.count -= reduceBy;
+        pendingConfirmValue = Math.max(0, pendingConfirmValue - (reduceBy * drink.price));
       });
       state.sessionActions = [];
       saveState();
@@ -395,6 +606,7 @@
       state.drinks = state.drinks.map(d => ({ ...d, count: 0 }));
       state.sessionActions = [];
       state.actionHistory = [];
+      pendingConfirmValue = 0;
       saveState();
       renderAll();
     }
@@ -421,8 +633,16 @@
       const staffName = document.getElementById('staffName').value.trim() || 'Onbekend';
       const formula = document.getElementById('formulaSelect').value;
       return state.drinks.filter(d => d.count > 0).map(d => ({
-        eventName, eventDate, stationId, staffName, formula, drink: d.name,
-        type: d.type, amount: Math.floor(d.count), stockAfter: Math.floor(Math.max(0, d.stock - d.count)), price: d.price,
+        eventName,
+        eventDate,
+        stationId,
+        staffName,
+        formula,
+        drink: d.name,
+        type: d.type,
+        amount: Math.floor(d.count),
+        stockAfter: Math.floor(Math.max(0, d.stock - d.count)),
+        price: d.price,
         total: +(d.price * d.count).toFixed(2)
       }));
     }
@@ -435,7 +655,7 @@
 
     function exportCsv() {
       const rows = buildRowsForExport();
-      const header = ['event', 'datum', 'id', 'naam personeel', 'formule', 'drank', 'type', 'aantal', 'stock_na', 'prijs', 'totaal'];
+      const header = ['event', 'datum', 'id', 'naam medewerker', 'formule', 'drank', 'type', 'aantal', 'stock_na', 'prijs', 'totaal'];
       const lines = [header.join(';')].concat(rows.map(r => [r.eventName, r.eventDate, r.stationId, r.staffName, r.formula, r.drink, r.type, r.amount, r.stockAfter, r.price, r.total].map(csvSafe).join(';')));
       const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
@@ -467,8 +687,38 @@
           alert('Lokaal bewaard, maar Google sync faalde.');
         }
       } else {
-        alert('Lokaal bewaard. Voeg Google Apps Script URL toe voor Drive/Sheets sync.');
+        alert('Lokaal bewaard. Voeg Google Apps Script URL toe bij instellingen.');
       }
+    }
+
+    function confirmOrder() {
+      if (pendingConfirmValue <= 0) return alert('Nog geen nieuwe dranken om te bevestigen.');
+      alert(`Bevestigd: € ${pendingConfirmValue.toFixed(2).replace('.', ',')}`);
+      pendingConfirmValue = 0;
+      state.sessionActions = [];
+      saveState();
+      renderAll();
+    }
+
+    function toggleSettingsMenu() {
+      document.getElementById('settingsMenu').classList.toggle('hidden');
+    }
+
+    function goPrevPage() {
+      currentPage = Math.max(0, currentPage - 1);
+      renderGrid();
+    }
+
+    function goNextPage() {
+      const totalPages = Math.max(1, Math.ceil(getFilteredDrinks().length / PAGE_SIZE));
+      currentPage = Math.min(totalPages - 1, currentPage + 1);
+      renderGrid();
+    }
+
+    function logout() {
+      document.getElementById('loginOverlay').classList.remove('hidden');
+      document.getElementById('settingsMenu').classList.add('hidden');
+      document.getElementById('loginPin').value = '';
     }
 
     function handleLogin() {
@@ -477,18 +727,31 @@
       document.getElementById('loginOverlay').classList.add('hidden');
     }
 
-    document.getElementById('formulaSelect').addEventListener('change', renderAll);
+    document.getElementById('formulaSelect').addEventListener('change', () => {
+      currentPage = 0;
+      renderAll();
+    });
+
     document.getElementById('saveBtn').addEventListener('click', saveEventSnapshot);
     document.getElementById('exportBtn').addEventListener('click', exportCsv);
     document.getElementById('resetBtn').addEventListener('click', resetCounts);
     document.getElementById('restoreBtn').addEventListener('click', restoreBackup);
-    document.getElementById('andersBtn').addEventListener('click', () => addAndersFromInput(''));
-    document.getElementById('addSearchDrink').addEventListener('click', () => addAndersFromInput(''));
-    document.getElementById('undoBtn').addEventListener('click', undoLast);
-    document.getElementById('undoSessionBtn').addEventListener('click', undoSession);
+    document.getElementById('andersBtn').addEventListener('click', addAndersFromInput);
+    document.getElementById('confirmBtn').addEventListener('click', confirmOrder);
+    document.getElementById('settingsToggle').addEventListener('click', toggleSettingsMenu);
+    document.getElementById('prevPageBtn').addEventListener('click', goPrevPage);
+    document.getElementById('nextPageBtn').addEventListener('click', goNextPage);
+    document.getElementById('accountBtn').addEventListener('click', logout);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('loginBtn').addEventListener('click', handleLogin);
-    document.getElementById('eventDate').value = todayIso();
 
+    document.addEventListener('click', (ev) => {
+      const menu = document.getElementById('settingsMenu');
+      const toggle = document.getElementById('settingsToggle');
+      if (!menu.contains(ev.target) && ev.target !== toggle) menu.classList.add('hidden');
+    });
+
+    document.getElementById('eventDate').value = todayIso();
     renderAll();
   </script>
 </body>
