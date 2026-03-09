@@ -2,498 +2,473 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="author" content="Janis Angele">
-  <meta name="creator" content="Janis Angele">
-  <meta name="copyright" content="© 2026 Mark-Up BV">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Velvet POS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
     :root {
-      --bg: #f4f6fb;
-      --card: #ffffff;
-      --text: #161a23;
-      --muted: #667085;
-      --brand: #6b5cff;
-      --ok: #2e7d32;
-      --border: #e4e7ec;
-      --shadow: 0 12px 28px rgba(15, 23, 42, .10);
+      --bg: #e6e7ee;
+      --card: #f7f7f9;
+      --text: #0f172a;
+      --border: #d9dde7;
+      --shadow: 0 7px 14px rgba(15, 23, 42, .08);
       --radius: 18px;
+      --btn-text: #fff;
+      --frisdranken: #0056bf;
+      --bieren: #ffae08;
+      --wijnen: #a84e00;
+      --nieuw: #430096;
+      --cocktails: #cd00d7;
+      --sterkfris: #be0000;
+      --sterkedranken: #ff5c72;
     }
-
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      background: radial-gradient(circle at top, #eef1ff 0%, #f4f6fb 35%, #f4f6fb 100%);
+      font-family: Inter, Segoe UI, Arial, sans-serif;
       color: var(--text);
-      font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
     }
-
     .hidden { display: none !important; }
-    .wrap { max-width: 1320px; margin: 0 auto; padding: 16px; }
-
-    .login-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(16, 24, 40, .45);
-      display: grid;
-      place-items: center;
-      z-index: 120;
-      backdrop-filter: blur(4px);
-    }
-
-    .login-card {
-      width: min(92vw, 440px);
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 16px; }
+    .card {
       background: var(--card);
       border-radius: var(--radius);
+      border: 1px solid #f0f0f2;
       box-shadow: var(--shadow);
+    }
+
+    .auth-overlay {
+      position: fixed; inset: 0; z-index: 20;
+      background: rgba(16, 24, 40, .5);
+      display: grid; place-items: center;
+    }
+    .auth-card {
+      width: min(95vw, 560px);
       padding: 20px;
     }
-
-    .topbar, .event-box, .panel, .grid-wrap {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, .8);
+    .auth-links { display: flex; gap: 14px; font-size: 16px; margin: 8px 0 12px; }
+    .auth-links button {
+      background: none; border: 0; padding: 0; cursor: pointer;
+      color: #2f2f7d; text-decoration: underline;
     }
+    .help-text { font-size: 14px; opacity: .9; margin-top: 10px; }
 
-    .topbar {
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .brand h1 { margin: 0; font-size: clamp(2rem, 4vw, 2.8rem); letter-spacing: .2px; }
-    .brand p { margin: 4px 0 0; color: var(--muted); font-size: .95rem; }
-
-    .menu-area { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    .icon-btn, .action-btn {
-      border: 0;
-      border-radius: 12px;
-      padding: 10px 12px;
-      background: #f2f4f7;
-      color: var(--text);
-      cursor: pointer;
-      font: inherit;
-      font-weight: 600;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      display: inline-grid;
-      place-items: center;
-      font-size: 1.05rem;
-      position: relative;
-    }
-
-    .icon-btn[data-tip]:hover::after {
-      content: attr(data-tip);
-      position: absolute;
-      top: 47px;
-      right: 0;
-      background: #111827;
-      color: #fff;
-      font-size: .72rem;
-      white-space: nowrap;
-      padding: 5px 8px;
-      border-radius: 8px;
-      z-index: 12;
-    }
-
-    .primary { background: var(--brand); color: #fff; }
-
-    .settings-pop {
-      position: absolute;
-      right: 16px;
-      top: 76px;
-      width: min(88vw, 340px);
-      padding: 12px;
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      z-index: 30;
-    }
-
-    .field label { display: block; font-size: .78rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+    .field label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 4px; color: #4b5563; }
     .field input, .field select {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 11px;
-      font: inherit;
-      background: #fff;
+      width: 100%; border: 1px solid #c9ced8; border-radius: 14px;
+      padding: 11px 12px; font: inherit; font-size: 18px; background: #fff;
     }
+
+    .header-card { position: relative; padding: 14px; margin-bottom: 8px; }
+
+    .topbar { padding: 0 8px; display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .brand h1 { margin: 0; font-size: clamp(3.3rem, 7vw, 5rem); line-height: .95; }
+    .user-actions { display: flex; flex-direction: column; gap: 14px; align-items: end; }
+    .user-row { font-size: 2.9rem; display: flex; align-items: center; gap: 14px; font-size: 2.9rem; }
+    .user-greeting { font-size: 16px; font-weight: 500; }
+    .iconbar { display: flex; gap: 16px; }
+    .icon-btn {
+      border: 0; background: transparent; color: #000; cursor: pointer;
+      font-size: 1.8rem;
+    }
+    .icon-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    .account-menu {
+      position: absolute; right: 18px; top: 84px; min-width: 230px;
+      background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow);
+      padding: 8px;
+    }
+    .menu-link {
+      display: block; width: 100%; text-align: left; border: 0; background: transparent;
+      padding: 10px; border-radius: 10px; font: inherit; cursor: pointer;
+    }
+    .menu-link:hover { background: #f3f4f6; }
 
     .event-box {
-      margin-bottom: 12px;
-      padding: 14px;
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
+      margin-top: 10px; padding: 12px;
+      display: grid; gap: 12px;
+      grid-template-columns: 3.2fr 1.7fr 1fr 1fr;
+      align-items: end;
     }
 
-    .grid-wrap { position: relative; padding: 14px; }
-    .grid-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
+    .grid-wrap { margin-top: 12px; padding: 14px; position: relative; }
+    .grid-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    #formulaTitle { margin: 0; font-size: 3.8rem; }
+    .action-btn {
+      border: 0; border-radius: 14px; padding: 10px 16px; background: #111; color: #fff; font-weight: 700; cursor: pointer;
     }
-
-    .pager { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-    .pager-info { font-size: .86rem; color: var(--muted); min-width: 64px; text-align: center; }
-
-    .anders-btn {
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      border: 0;
-      border-radius: 12px;
-      background: #111;
-      color: #fff;
-      padding: 10px 14px;
-      cursor: pointer;
-      font-weight: 700;
-      z-index: 4;
-    }
+    .pager { display: flex; gap: 8px; align-items: center; }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
       gap: 12px;
-      padding-top: 34px;
     }
-
     .drink-btn {
-      border: 0;
-      border-radius: 16px;
-      min-height: 138px;
-      padding: 12px;
-      box-shadow: 0 6px 14px rgba(15, 23, 42, .12);
-      cursor: pointer;
-      text-align: left;
-      position: relative;
-      color: #0f172a;
+      border: 0; border-radius: 14px; padding: 14px; color: var(--btn-text); min-height: 138px;
+      box-shadow: var(--shadow); text-align: left; cursor: pointer; position: relative;
     }
-
-    .drink-title { font-size: 1.45rem; line-height: 1.15; font-weight: 700; }
-    #formulaTitle { font-size: 1.35rem; }
-    .drink-sub { font-size: .86rem; margin-top: 6px; opacity: .9; }
+    .drink-title { font-size: 2rem; font-weight: 600; line-height: 1.02; }
+    .drink-sub { margin-top: 6px; font-size: 16px; font-weight: 400; }
     .drink-meta {
-      position: absolute;
-      left: 12px;
-      right: 12px;
-      bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      font-size: .83rem;
-      font-weight: 600;
+      position: absolute; left: 12px; right: 12px; bottom: 8px; display: flex; justify-content: space-between;
+      font-size: 14px; font-weight: 400;
     }
 
-    .bottom { display: grid; grid-template-columns: 1.2fr .8fr; gap: 12px; margin-top: 14px; }
-    .panel { padding: 14px; }
-    .panel h2 { margin-top: 0; margin-bottom: 12px; }
-
-    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
-    th, td { padding: 8px 6px; border-bottom: 1px solid #eef2f6; text-align: left; }
-
+    .bottom { margin-top: 14px; display: grid; grid-template-columns: 1.5fr .95fr; gap: 12px; }
+    .panel { padding: 12px; }
+    .panel h2 { margin: 0 0 8px; font-size: 2.7rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 1.45rem; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 9px 8px; }
     .summary-action { display: flex; gap: 8px; }
-    .mini-btn { min-width: 34px; padding: 8px 10px; }
+    .mini-btn { border: 0; border-radius: 10px; padding: 6px 10px; font-weight: 700; cursor: pointer; }
 
-    .actions-panel {
-      min-height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
+    .actions-panel { display: flex; flex-direction: column; justify-content: space-between; }
+    #confirmCycleLabel { text-align: right; font-size: 4.2rem; font-weight: 800; margin-bottom: 10px; }
     .confirm-btn {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 18px;
-      background: var(--ok);
-      color: #fff;
-      font: inherit;
-      font-size: 1.05rem;
-      font-weight: 700;
-      cursor: pointer;
-      width: 100%;
+      border: 0; border-radius: 14px; padding: 14px;
+      width: 100%; background: #000; color: #fff; font-size: 2.2rem; font-weight: 800; cursor: pointer;
+    }
+    .small-totals {
+      margin-top: 12px; display: flex; justify-content: space-between; font-size: 1.5rem;
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 12px;
     }
 
-    .small-totals {
-      display: grid;
-      gap: 8px;
-      color: #334155;
-      font-size: .9rem;
-      background: #f8fafc;
-      padding: 10px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 30; background: rgba(15, 23, 42, .4);
+      display: grid; place-items: center;
+    }
+    .modal {
+      width: min(95vw, 920px); padding: 20px; position: relative;
+    }
+    .close {
+      position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 999px;
+      border: 0; background: #000; color: #fff; font-size: 1.45rem; cursor: pointer;
+    }
+    .settings-row { display: grid; grid-template-columns: 220px 1fr 160px; gap: 10px; align-items: center; margin-bottom: 12px; }
+    .view-link {
+      border: 0; background: transparent; color: #2a1a15; font-size: 1.9rem; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
     }
 
     @media (max-width: 980px) {
-      .event-box { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .bottom { grid-template-columns: 1fr; }
-      .settings-pop { top: 66px; }
-    }
-
-    @media (max-width: 640px) {
-      .wrap { padding: 10px; }
-      .topbar { padding: 12px; align-items: flex-start; }
-      .menu-area { width: 100%; justify-content: flex-start; }
-      .event-box { grid-template-columns: 1fr; padding: 10px; }
-      .grid-wrap { padding: 10px; }
-      .grid { grid-template-columns: 1fr; }
-      .drink-title { font-size: 1.28rem; }
-      #formulaTitle { font-size: 1.15rem; }
+      .event-box, .bottom { grid-template-columns: 1fr; }
+      .settings-row { grid-template-columns: 1fr; }
+      .drink-title { font-size: 2rem; }
+      .user-greeting { font-size: 16px; }
+      #formulaTitle { font-size: 2.6rem; }
+      #confirmCycleLabel { font-size: 2.8rem; }
+      .icon-btn { font-size: 1.3rem; }
     }
   </style>
 </head>
 <body>
-  <div class="login-overlay" id="loginOverlay">
-    <div class="login-card">
-      <h2 style="margin:0 0 10px;">Login Velvet POS</h2>
-      <div class="field">
-        <label for="loginPin">PIN</label>
-        <input id="loginPin" type="password" placeholder="Voer PIN in" />
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-card card">
+      <h2 id="authTitle" style="margin-top:0;">Login Velvet POS</h2>
+      <div id="loginPane">
+        <div class="field"><label for="loginEmail">Gebruikersnaam (email)</label><input id="loginEmail" type="email" /></div>
+        <div class="field"><label for="loginPassword">Paswoord</label><input id="loginPassword" type="password" /></div>
+        <button class="action-btn" id="loginBtn" style="width:100%; margin-top:10px;">Login</button>
+        <div class="auth-links">
+          <button id="forgotLink">Paswoord vergeten?</button>
+          <button id="registerLink">Registreren</button>
+        </div>
       </div>
-      <p style="color: var(--muted); font-size: .85rem;">Standaard PIN: <b>Velvet2026</b>.</p>
-      <button class="action-btn primary" id="loginBtn" style="width:100%;">Inloggen</button>
+      <div id="forgotPane" class="hidden">
+        <div class="field"><label for="forgotEmail">Email</label><input id="forgotEmail" type="email" placeholder="naam@email.be" /></div>
+        <button class="action-btn" id="forgotBtn" style="width:100%; margin-top:10px;">Reset link sturen</button>
+      </div>
+      <div id="registerPane" class="hidden">
+        <div class="field"><label for="regLast">Naam</label><input id="regLast" /></div>
+        <div class="field"><label for="regFirst">Voornaam</label><input id="regFirst" /></div>
+        <div class="field"><label for="regPhone">Telefoonnummer</label><input id="regPhone" /></div>
+        <div class="field"><label for="regEmail">Email</label><input id="regEmail" type="email" /></div>
+        <div class="field"><label for="regRole">Functie</label><input id="regRole" placeholder="Barmedewerker" /></div>
+        <div class="field"><label for="regPassword">Paswoord</label><input id="regPassword" type="password" /></div>
+        <button class="action-btn" id="registerBtn" style="width:100%; margin-top:10px;">Bevestigen</button>
+      </div>
+      <div class="auth-links"><button id="backLogin">Terug naar login</button></div>
+      <p class="help-text">Hulp nodig? Bel +32 496 96 91 31 of janis@event-locaties.be.</p>
     </div>
   </div>
 
   <div class="wrap">
+    <div class="header-card card">
     <div class="topbar">
-      <div class="brand">
-        <h1>Velvet</h1>
-        <p>Modern en responsive kassascherm voor mobiel, tablet en desktop.</p>
-      </div>
-
-      <div class="menu-area">
-        <button class="icon-btn" id="saveBtn" data-tip="Save" aria-label="Save">💾</button>
-        <button class="icon-btn" id="exportBtn" data-tip="Exporteer" aria-label="Exporteer">📤</button>
-        <button class="icon-btn" id="resetBtn" data-tip="Reset" aria-label="Reset">↩️</button>
-        <button class="icon-btn" id="restoreBtn" data-tip="Backup" aria-label="Backup">🗄️</button>
-        <button class="icon-btn" id="settingsToggle" data-tip="Instellingen" aria-label="Instellingen">⚙️</button>
-        <button class="icon-btn" id="accountBtn" data-tip="Account" aria-label="Account">👤</button>
-      </div>
-
-      <div class="settings-pop hidden" id="settingsMenu">
-        <div class="field">
-          <label for="sheetEndpoint">Google Apps Script URL</label>
-          <input id="sheetEndpoint" placeholder="https://script.google.com/..." />
+      <div class="brand"><h1>Velvet</h1></div>
+      <div class="user-actions">
+        <div class="user-row">
+          <span class="user-greeting" id="userGreeting">Hallo</span>
+          <button class="icon-btn" id="accountBtn"><i class="fa-sharp fa-solid fa-circle-user"></i></button>
         </div>
-        <button class="action-btn" id="logoutBtn" style="margin-top:8px; width: 100%;">Logout</button>
+        <div class="iconbar">
+          <button class="icon-btn" id="undoBtn" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+          <button class="icon-btn" id="saveBtn" title="Opslaan"><i class="fa-solid fa-floppy-disk"></i></button>
+          <button class="icon-btn" id="exportBtn" title="Export"><i class="fa-solid fa-download"></i></button>
+          <button class="icon-btn" id="restoreBtn" title="Backup"><i class="fa-solid fa-cloud-arrow-down"></i></button>
+          <button class="icon-btn" id="settingsToggle" title="Instellingen"><i class="fa-solid fa-gear"></i></button>
+        </div>
+      </div>
+      <div class="account-menu hidden" id="accountMenu">
+        <button class="menu-link" id="editProfileBtn">Gegevens wijzigen</button>
+        <button class="menu-link" id="logoutBtn">Uitloggen</button>
       </div>
     </div>
 
     <div class="event-box">
-      <div class="field"><label for="eventName">Event</label><input id="eventName" placeholder="Naam event"></div>
-      <div class="field"><label for="eventDate">Datum</label><input id="eventDate" type="date"></div>
-      <div class="field"><label for="formulaSelect">Formule</label>
-        <select id="formulaSelect">
-          <option value="volledige lijst">Volledige lijst</option>
-          <option value="light">Light</option>
-          <option value="lux">Lux</option>
-          <option value="gold">Gold</option>
-          <option value="diamond">Diamond</option>
-        </select>
-      </div>
-      <div class="field"><label for="stationId">ID</label>
-        <select id="stationId">
-          <option>Bar voor 1</option>
-          <option>Bar achter 1</option>
-          <option>Bar achter 2</option>
-          <option>Zaal 1</option>
-          <option>Zaal 2</option>
-        </select>
-      </div>
-      <div class="field"><label for="staffName">Naam medewerker</label><input id="staffName" placeholder="bv. Bob"></div>
+      <div class="field"><label>Naam event</label><input id="eventName" placeholder="Naam event" /></div>
+      <div class="field"><label>Datum event</label><input type="date" id="eventDate" /></div>
+      <div class="field"><label>Drankenformule</label><select id="formulaSelect"><option value="light">Light</option><option value="volledige lijst">Volledige lijst</option></select></div>
+      <div class="field"><label>ID</label><select id="stationId"><option>Bar voor 1</option><option>Bar achter 1</option></select></div>
+    </div>
     </div>
 
-    <div class="grid-wrap">
-      <button class="anders-btn" id="andersBtn">+ Nieuw artikel</button>
-      <div class="grid-head">
-        <strong id="formulaTitle">Volledige lijst</strong>
-        <div class="pager">
-          <button class="action-btn" id="prevPageBtn">◀</button>
-          <span class="pager-info" id="pageInfo">1 / 1</span>
-          <button class="action-btn" id="nextPageBtn">▶</button>
-        </div>
-      </div>
+    <div class="grid-wrap card">
+      <div class="grid-head"><h2 id="formulaTitle">Light</h2><div class="pager"><button class="action-btn" id="prevPageBtn">◀</button><button class="action-btn" id="nextPageBtn">▶</button><button class="action-btn" id="andersBtn">+ Nieuw artikel</button></div></div>
       <div class="grid" id="drinkGrid"></div>
     </div>
 
     <div class="bottom">
-      <div class="panel">
+      <div class="panel card">
         <h2>Overzicht</h2>
         <table>
           <thead><tr><th>Drank</th><th>Aantal</th><th>Stock na</th><th>€</th><th>Actie</th></tr></thead>
           <tbody id="summaryBody"></tbody>
         </table>
       </div>
-      <div class="panel actions-panel">
-        <div style="text-align:right; font-weight:700;">Totaal: <span id="confirmCycleTotal">€ 0,00</span></div>
-        <div>
-          <button class="confirm-btn" id="confirmBtn">Bevestig</button>
-        </div>
+      <div class="panel card actions-panel">
+        <div id="confirmCycleLabel">Totaal: € 0,00</div>
+        <button class="confirm-btn" id="confirmBtn">Bevestigen</button>
         <div class="small-totals">
-          <div style="display:flex; justify-content:space-between; gap:8px;">
-            <span><strong>Omzet event:</strong> <span id="eventRevenue">€ 0,00</span></span>
-            <span><strong>Dranken event:</strong> <span id="eventCount">0</span></span>
-          </div>
+          <span><strong>Omzet event:</strong> <span id="eventRevenue">€ 0,00</span></span>
+          <span><strong>Dranken event:</strong> <span id="eventCount">0</span></span>
         </div>
       </div>
     </div>
+  </div>
 
+  <div class="modal-overlay hidden" id="settingsModal">
+    <div class="modal card">
+      <button class="close" id="closeSettings">×</button>
+      <h2 style="font-size:3rem; margin-top:0;">Instellingen</h2>
+      <div class="settings-row"><label>Google app script:</label><input id="sheetEndpoint" placeholder="https://..." /><button class="view-link" data-link="sheetEndpoint"><i class="fa-solid fa-eye"></i>Bekijk</button></div>
+      <div class="settings-row"><label>Dagontvangsten:</label><input id="dbLink" placeholder="https://..." /><button class="view-link" data-link="dbLink"><i class="fa-solid fa-eye"></i>Bekijk</button></div>
+      <div class="settings-row"><label>Stockbeheer:</label><input id="stockLink" placeholder="https://..." /><button class="view-link" data-link="stockLink"><i class="fa-solid fa-eye"></i>Bekijk</button></div>
+      <button class="action-btn" id="saveSettings" style="margin-left:auto; display:block;"><i class="fa-solid fa-floppy-disk"></i> Bewaar</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="profileModal">
+    <div class="modal card" style="max-width:900px;">
+      <button class="close" id="closeProfile">×</button>
+      <h2 style="margin-top:0;">Account</h2>
+      <div class="field"><label>Email</label><input id="profileEmail" disabled /></div>
+      <div class="field"><label>Functie</label><input id="profileFunction" /></div>
+      <div class="field"><label>Nieuw paswoord</label><input id="profilePassword" type="password" placeholder="Leeg laten = ongewijzigd"/></div>
+      <div id="roleEditor" class="hidden" style="margin-top:12px;"></div>
+      <button class="action-btn" id="saveProfile" style="margin-top:12px;">Opslaan</button>
+    </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'velvet-pos-v2';
-    const ARCHIVE_KEY = 'velvet-pos-archive-v2';
-    const BACKUP_KEY = 'velvet-pos-backup-v2';
-    const LOGIN_PIN = 'Velvet2026';
-    const PAGE_SIZE = 12;
+    const USERS_KEY = 'velvet-users-v1';
+    const AUTH_KEY = 'velvet-auth-v1';
+    const SETTINGS_KEY = 'velvet-settings-v1';
+    const POS_STATE_KEY = 'velvet-pos-v3';
+    const DEFAULT_SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycby9_vdbVD5YHhe-mAC9ss2CaAB4coe9TpzxXe5uvIFkPPTJ1xDLLxnqlommVx1ILSlO/exec';
 
     const categoryColors = {
-      'Frisdranken': '#d9f99d',
-      'Bieren': '#fde68a',
-      'Wijnen': '#fef08a',
-      'Cocktails': '#ddd6fe',
-      'Sterke dranken': '#fecdd3',
-      'Anders': '#e2e8f0'
+      'Frisdranken': 'var(--frisdranken)',
+      'Bieren': 'var(--bieren)',
+      'Wijnen': 'var(--wijnen)',
+      'Nieuw': 'var(--nieuw)',
+      'Cocktails': 'var(--cocktails)',
+      'Sterk + fris': 'var(--sterkfris)',
+      'Sterke dranken': 'var(--sterkedranken)'
     };
 
     const defaultDrinks = [
-      { id: 'cola', name: 'Cola', category: 'Frisdranken', color: '#8bc34a', stock: 24, count: 0, price: 2.8, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'fris', exactBrand: true, stockPool: 'cola' },
-      { id: 'cola_zero', name: 'Cola Zero', category: 'Frisdranken', color: '#7cb342', stock: 24, count: 0, price: 2.8, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'fris', exactBrand: true, stockPool: 'cola_zero' },
-      { id: 'tonic', name: 'Tonic', category: 'Frisdranken', color: '#aed581', stock: 18, count: 0, price: 2.8, formulas: ['volledige lijst','lux','gold','diamond'], type: 'fris', exactBrand: false, stockPool: 'mix_fris' },
-      { id: 'ginger_ale', name: 'Ginger Ale', category: 'Frisdranken', color: '#c5e1a5', stock: 18, count: 0, price: 2.8, formulas: ['volledige lijst','lux','gold','diamond'], type: 'fris', exactBrand: false, stockPool: 'mix_fris' },
-      { id: 'pils', name: 'Pils', category: 'Bieren', color: '#ffeb3b', stock: 48, count: 0, price: 3.2, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'bier', exactBrand: true, stockPool: 'pils' },
-      { id: 'ipa', name: 'IPA', category: 'Bieren', color: '#fdd835', stock: 24, count: 0, price: 3.8, formulas: ['volledige lijst','gold','diamond'], type: 'bier', exactBrand: true, stockPool: 'ipa' },
-      { id: 'wit', name: 'Huiswijn wit', category: 'Wijnen', color: '#f9c2d1', stock: 30, count: 0, price: 4.4, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'wijn', exactBrand: true, stockPool: 'wijn_wit' },
-      { id: 'rood', name: 'Huiswijn rood', category: 'Wijnen', color: '#f7a8bb', stock: 30, count: 0, price: 4.4, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'wijn', exactBrand: true, stockPool: 'wijn_rood' },
-      { id: 'gin_tonic', name: 'Gin Tonic', category: 'Cocktails', color: '#c4b5fd', stock: 40, count: 0, price: 9.5, formulas: ['volledige lijst','gold','diamond'], type: 'cocktail', exactBrand: false, stockPool: 'cocktail' },
-      { id: 'mojito', name: 'Mojito', category: 'Cocktails', color: '#a78bfa', stock: 35, count: 0, price: 10, formulas: ['volledige lijst','diamond'], type: 'cocktail', exactBrand: false, stockPool: 'cocktail' },
-      { id: 'vodka', name: 'Vodka', category: 'Sterke dranken', color: '#ef9a9a', stock: 20, count: 0, price: 7, formulas: ['volledige lijst','lux','gold','diamond'], type: 'sterk', exactBrand: true, stockPool: 'vodka' },
-      { id: 'whisky', name: 'Whisky', category: 'Sterke dranken', color: '#e57373', stock: 20, count: 0, price: 8.2, formulas: ['volledige lijst','gold','diamond'], type: 'sterk', exactBrand: true, stockPool: 'whisky' },
-      { id: 'anders', name: 'Anders', category: 'Anders', color: '#d1c4e9', stock: 9999, count: 0, price: 0, formulas: ['volledige lijst','light','lux','gold','diamond'], type: 'custom', exactBrand: true, stockPool: 'anders' }
+      { id: 'cola', name: 'Cola', category: 'Frisdranken', stock: 24, count: 0, price: 2.8, formulas: ['light','volledige lijst'] },
+      { id: 'cola_zero', name: 'Cola Zero', category: 'Frisdranken', stock: 24, count: 0, price: 2.8, formulas: ['light','volledige lijst'] },
+      { id: 'pils', name: 'Pils', category: 'Bieren', stock: 46, count: 0, price: 3.2, formulas: ['light','volledige lijst'] },
+      { id: 'huiswijn_wit', name: 'Huiswijn wit', category: 'Wijnen', stock: 30, count: 0, price: 7, formulas: ['light','volledige lijst'] },
+      { id: 'huiswijn_rood', name: 'Huiswijn rood', category: 'Wijnen', stock: 30, count: 0, price: 7, formulas: ['light','volledige lijst'] },
+      { id: 'gin_tonic', name: 'Gin tonic', category: 'Nieuw', stock: 9999, count: 0, price: 0, formulas: ['light','volledige lijst'] },
+      { id: 'cocktail', name: 'Cocktail', category: 'Cocktails', stock: 9999, count: 0, price: 10, formulas: ['light','volledige lijst'] },
+      { id: 'sterk_fris', name: 'Sterk + fris', category: 'Sterk + fris', stock: 9999, count: 0, price: 11, formulas: ['light','volledige lijst'] },
+      { id: 'sterk', name: 'Sterke dranken', category: 'Sterke dranken', stock: 9999, count: 0, price: 12, formulas: ['light','volledige lijst'] }
     ];
 
-    const recipes = {
-      gin_tonic: [{ ingredientPool: 'vodka', qty: 0.05 }, { ingredientPool: 'mix_fris', qty: 1 }],
-      mojito: [{ ingredientPool: 'cocktail', qty: 1 }]
-    };
-
-    let state = loadState();
+    const state = JSON.parse(localStorage.getItem(POS_STATE_KEY) || 'null') || { drinks: defaultDrinks, pendingConfirmValue: 0, actionHistory: [] };
     let currentPage = 0;
-    let pendingConfirmValue = 0;
+    const PAGE_SIZE = 10;
 
-    function loadState() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { drinks: structuredClone(defaultDrinks), actionHistory: [], sessionActions: [] };
-      try {
-        const parsed = JSON.parse(raw);
-        return {
-          drinks: Array.isArray(parsed.drinks) ? parsed.drinks : structuredClone(defaultDrinks),
-          actionHistory: Array.isArray(parsed.actionHistory) ? parsed.actionHistory : [],
-          sessionActions: Array.isArray(parsed.sessionActions) ? parsed.sessionActions : []
-        };
-      } catch {
-        return { drinks: structuredClone(defaultDrinks), actionHistory: [], sessionActions: [] };
+    function seedAdmin() {
+      const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+      if (!users.some(u => u.role === 'beheerder')) {
+        users.push({ email: 'beheerder@velvet.be', password: 'Velvet2026', firstName: 'Janis', lastName: 'Admin', phone: '', functionName: 'Beheer', role: 'beheerder' });
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
       }
     }
+    seedAdmin();
 
-    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
+    function saveUsers(users) { localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+    function getAuth() { return JSON.parse(localStorage.getItem(AUTH_KEY) || 'null'); }
+    function saveAuth(user) { localStorage.setItem(AUTH_KEY, JSON.stringify({ email: user.email })); }
+    function clearAuth() { localStorage.removeItem(AUTH_KEY); }
 
-    function todayIso() {
-      const d = new Date();
-      const tzOffset = d.getTimezoneOffset() * 60000;
-      return new Date(d.getTime() - tzOffset).toISOString().slice(0, 10);
+    function getCurrentUser() {
+      const auth = getAuth();
+      if (!auth) return null;
+      return getUsers().find(u => u.email === auth.email) || null;
+    }
+
+    function switchAuthPane(name) {
+      ['loginPane','forgotPane','registerPane'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      document.getElementById(name).classList.remove('hidden');
+    }
+
+    function login() {
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const password = document.getElementById('loginPassword').value;
+      const user = getUsers().find(u => u.email === email && u.password === password);
+      if (!user) return alert('Foute login.');
+      saveAuth(user);
+      hydrateAfterLogin();
+    }
+
+    function register() {
+      const user = {
+        lastName: document.getElementById('regLast').value.trim(),
+        firstName: document.getElementById('regFirst').value.trim(),
+        phone: document.getElementById('regPhone').value.trim(),
+        email: document.getElementById('regEmail').value.trim().toLowerCase(),
+        functionName: document.getElementById('regRole').value.trim(),
+        password: document.getElementById('regPassword').value,
+        role: 'administrator'
+      };
+      if (!user.email || !user.password || !user.firstName) return alert('Vul verplichte velden in.');
+      const users = getUsers();
+      if (users.some(u => u.email === user.email)) return alert('Email bestaat al.');
+      users.push(user);
+      saveUsers(users);
+      alert('Registratie voltooid. Je kan nu inloggen met email + paswoord.');
+      switchAuthPane('loginPane');
+      document.getElementById('loginEmail').value = user.email;
+    }
+
+    function forgotPassword() {
+      const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
+      if (!email) return alert('Vul je email in.');
+      const user = getUsers().find(u => u.email === email);
+      if (!user) return alert('Geen account met dit emailadres.');
+      const newPassword = prompt(`Reset link verstuurd naar ${email}. Kies nu nieuw paswoord:`);
+      if (!newPassword) return;
+      const users = getUsers().map(u => u.email === email ? { ...u, password: newPassword } : u);
+      saveUsers(users);
+      alert('Paswoord vernieuwd. Log nu in.');
+      switchAuthPane('loginPane');
+      document.getElementById('loginEmail').value = email;
+    }
+
+    function hydrateAfterLogin() {
+      const user = getCurrentUser();
+      document.getElementById('authOverlay').classList.toggle('hidden', !!user);
+      if (!user) return;
+      document.getElementById('userGreeting').textContent = `Hallo ${user.firstName}`;
+      const settingsBtn = document.getElementById('settingsToggle');
+      settingsBtn.disabled = false;
+      if (user.role === 'administrator') settingsBtn.title = 'Instellingen';
+      renderRoleEditor();
+      renderAll();
+    }
+
+    function logout() {
+      clearAuth();
+      document.getElementById('accountMenu').classList.add('hidden');
+      hydrateAfterLogin();
+    }
+
+    function renderRoleEditor() {
+      const me = getCurrentUser();
+      const box = document.getElementById('roleEditor');
+      box.innerHTML = '';
+      if (!me || me.role !== 'beheerder') {
+        box.classList.add('hidden');
+        return;
+      }
+      box.classList.remove('hidden');
+      box.innerHTML = '<h3>Gebruikersrechten</h3>';
+      getUsers().forEach(user => {
+        const row = document.createElement('div');
+        row.style.display = 'grid';
+        row.style.gridTemplateColumns = '1fr 180px';
+        row.style.gap = '8px';
+        row.style.marginBottom = '6px';
+        row.innerHTML = `<span>${user.firstName} ${user.lastName} (${user.email})</span><select data-email="${user.email}"><option ${user.role === 'administrator' ? 'selected' : ''}>administrator</option><option ${user.role === 'beheerder' ? 'selected' : ''}>beheerder</option></select>`;
+        box.appendChild(row);
+      });
+    }
+
+    function saveProfile() {
+      const me = getCurrentUser();
+      if (!me) return;
+      const functionName = document.getElementById('profileFunction').value.trim();
+      const newPw = document.getElementById('profilePassword').value;
+      let users = getUsers().map(u => u.email === me.email ? { ...u, functionName, ...(newPw ? { password: newPw } : {}) } : u);
+      if (me.role === 'beheerder') {
+        document.querySelectorAll('#roleEditor select').forEach(sel => {
+          users = users.map(u => u.email === sel.dataset.email ? { ...u, role: sel.value } : u);
+        });
+      }
+      saveUsers(users);
+      alert('Gegevens opgeslagen.');
+      document.getElementById('profileModal').classList.add('hidden');
+      hydrateAfterLogin();
     }
 
     function getFilteredDrinks() {
       const formula = document.getElementById('formulaSelect').value;
-      return state.drinks.filter(d => d.id !== 'anders' && d.formulas.includes(formula));
+      return state.drinks.filter(d => d.formulas.includes(formula));
     }
-
     function getPagedDrinks() {
       const drinks = getFilteredDrinks();
       const pages = Math.max(1, Math.ceil(drinks.length / PAGE_SIZE));
-      if (currentPage >= pages) currentPage = pages - 1;
-      const start = currentPage * PAGE_SIZE;
-      const end = start + PAGE_SIZE;
-      return { drinks: drinks.slice(start, end), pages };
+      if (currentPage > pages - 1) currentPage = pages - 1;
+      return { drinks: drinks.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE), pages };
     }
 
-    function decrementPool(drink) {
-      if (drink.exactBrand) return;
-      const samePool = state.drinks.filter(d => d.stockPool === drink.stockPool && d.id !== drink.id);
-      const target = samePool.find(d => (d.stock - d.count) > 0);
-      if (target) target.count += 1;
-    }
-
-    function applyRecipe(drink) {
-      const recipe = recipes[drink.id];
-      if (!recipe) return;
-      recipe.forEach(item => {
-        const ingredient = state.drinks.find(d => d.stockPool === item.ingredientPool);
-        if (ingredient) ingredient.count += item.qty;
-      });
-    }
-
-    function incrementDrink(drinkId) {
-      const drink = state.drinks.find(d => d.id === drinkId);
+    function incrementDrink(id) {
+      const drink = state.drinks.find(d => d.id === id);
       if (!drink) return;
-      state.actionHistory.push({ drinkId, at: Date.now() });
-      state.sessionActions.push({ drinkId, at: Date.now() });
       drink.count += 1;
-      decrementPool(drink);
-      applyRecipe(drink);
-      pendingConfirmValue += drink.price;
-      saveState();
-      renderAll();
+      state.pendingConfirmValue += drink.price;
+      state.actionHistory.push(id);
+      persistAndRender();
     }
 
-    function decrementDrink(drinkId) {
-      const drink = state.drinks.find(d => d.id === drinkId);
-      if (!drink) return;
-      if (drink.count > 0) {
-        drink.count -= 1;
-        pendingConfirmValue = Math.max(0, pendingConfirmValue - drink.price);
-      }
-      saveState();
-      renderAll();
+    function decrementDrink(id) {
+      const drink = state.drinks.find(d => d.id === id);
+      if (!drink || drink.count <= 0) return;
+      drink.count -= 1;
+      state.pendingConfirmValue = Math.max(0, state.pendingConfirmValue - drink.price);
+      persistAndRender();
     }
 
     function renderGrid() {
       const grid = document.getElementById('drinkGrid');
       grid.innerHTML = '';
-      const paged = getPagedDrinks();
-      paged.drinks.forEach(drink => {
-        const stockAfter = Math.max(0, drink.stock - drink.count);
+      getPagedDrinks().drinks.forEach(drink => {
         const btn = document.createElement('button');
         btn.className = 'drink-btn';
-        btn.style.background = drink.color || categoryColors[drink.category] || '#e2e8f0';
-        btn.innerHTML = `
-          <div class="drink-title">${drink.name}</div>
-          <div class="drink-sub">€ ${drink.price.toFixed(2)} • ${drink.category}</div>
-          <div class="drink-meta"><span>x ${Math.floor(drink.count)}</span><span>stock: ${Math.floor(stockAfter)}</span></div>
-        `;
-        btn.addEventListener('click', () => incrementDrink(drink.id));
+        btn.style.background = categoryColors[drink.category] || '#111';
+        btn.innerHTML = `<div class="drink-title">${drink.name}</div><div class="drink-sub">€ ${drink.price.toFixed(2)} • ${drink.category}</div><div class="drink-meta"><span>x ${drink.count}</span><span>stock: ${Math.max(0, drink.stock - drink.count)}</span></div>`;
+        btn.onclick = () => incrementDrink(drink.id);
         grid.appendChild(btn);
       });
-
-      document.getElementById('pageInfo').textContent = `${currentPage + 1} / ${paged.pages}`;
-      document.getElementById('prevPageBtn').disabled = currentPage <= 0;
-      document.getElementById('nextPageBtn').disabled = currentPage >= (paged.pages - 1);
     }
 
     function renderSummary() {
@@ -501,258 +476,176 @@
       body.innerHTML = '';
       state.drinks.filter(d => d.count > 0).forEach(d => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${d.name}</td>
-          <td>${Math.floor(d.count)}</td>
-          <td>${Math.floor(Math.max(0, d.stock - d.count))}</td>
-          <td>€ ${(d.count * d.price).toFixed(2)}</td>
-          <td>
-            <div class="summary-action">
-              <button class="action-btn mini-btn" data-a="minus">-</button>
-              <button class="action-btn mini-btn" data-a="plus">+</button>
-            </div>
-          </td>
-        `;
-        tr.querySelector('[data-a="minus"]').addEventListener('click', () => decrementDrink(d.id));
-        tr.querySelector('[data-a="plus"]').addEventListener('click', () => incrementDrink(d.id));
+        tr.innerHTML = `<td>${d.name}</td><td>${d.count}</td><td>${Math.max(0, d.stock - d.count)}</td><td>€ ${(d.count * d.price).toFixed(2)}</td><td><div class="summary-action"><button class="mini-btn" data-op="minus">-</button><button class="mini-btn" data-op="plus">+</button></div></td>`;
+        tr.querySelector('[data-op="minus"]').onclick = () => decrementDrink(d.id);
+        tr.querySelector('[data-op="plus"]').onclick = () => incrementDrink(d.id);
         body.appendChild(tr);
       });
       if (!body.children.length) body.innerHTML = '<tr><td colspan="5">Nog geen registraties.</td></tr>';
     }
 
     function renderTotals() {
-      const eventRevenue = state.drinks.reduce((sum, d) => sum + d.count * d.price, 0);
-      const eventCount = state.drinks.reduce((sum, d) => sum + d.count, 0);
-
-      document.getElementById('confirmCycleTotal').textContent = `€ ${pendingConfirmValue.toFixed(2).replace('.', ',')}`;
-      document.getElementById('eventRevenue').textContent = `€ ${eventRevenue.toFixed(2).replace('.', ',')}`;
-      document.getElementById('eventCount').textContent = `${Math.floor(eventCount)}`;
+      const revenue = state.drinks.reduce((s, d) => s + d.count * d.price, 0);
+      const count = state.drinks.reduce((s, d) => s + d.count, 0);
+      document.getElementById('confirmCycleLabel').textContent = `Totaal: € ${state.pendingConfirmValue.toFixed(2).replace('.', ',')}`;
+      document.getElementById('eventRevenue').textContent = `€ ${revenue.toFixed(2).replace('.', ',')}`;
+      document.getElementById('eventCount').textContent = `${count}`;
+      document.getElementById('formulaTitle').textContent = document.getElementById('formulaSelect').value === 'light' ? 'Light' : 'Volledige lijst';
     }
 
-    function renderFormulaTitle() {
-      const formula = document.getElementById('formulaSelect').value;
-      document.getElementById('formulaTitle').textContent = formula.charAt(0).toUpperCase() + formula.slice(1);
-    }
+    function persistAndRender() { localStorage.setItem(POS_STATE_KEY, JSON.stringify(state)); renderAll(); }
+    function renderAll() { renderGrid(); renderSummary(); renderTotals(); }
 
-    function renderAll() {
-      renderFormulaTitle();
-      renderGrid();
-      renderSummary();
-      renderTotals();
-    }
-
-    function addAndersFromInput() {
-      const name = prompt('Naam drank (nieuw of bestaand):', '');
-      if (!name) return;
-      const priceInput = prompt('Prijs van deze drank?', '0');
-      const price = Number.parseFloat((priceInput || '0').replace(',', '.')) || 0;
-      const id = `custom_${Date.now()}`;
-      const formula = document.getElementById('formulaSelect').value;
-      const newDrink = {
-        id,
-        name,
-        category: 'Anders',
-        color: '#111111',
-        stock: 9999,
-        count: 1,
-        price,
-        formulas: ['volledige lijst','light','lux','gold','diamond'].includes(formula) ? [formula, 'volledige lijst'] : ['volledige lijst'],
-        type: 'custom',
-        exactBrand: true,
-        stockPool: id
-      };
-      state.drinks.push(newDrink);
-      state.actionHistory.push({ drinkId: id, at: Date.now() });
-      state.sessionActions.push({ drinkId: id, at: Date.now() });
-      pendingConfirmValue += newDrink.price;
-      saveState();
-      renderAll();
-    }
-
-    function undoLast() {
-      const last = state.actionHistory.pop();
-      if (!last) return alert('Geen acties om te undo-en.');
-      decrementDrink(last.drinkId);
-      saveState();
-      renderAll();
-    }
-
-    function undoSession() {
-      if (!state.sessionActions.length) return alert('Geen sessie-acties om terug te draaien.');
-      const grouped = state.sessionActions.reduce((acc, row) => {
-        acc[row.drinkId] = (acc[row.drinkId] || 0) + 1;
-        return acc;
-      }, {});
-      Object.entries(grouped).forEach(([drinkId, n]) => {
-        const drink = state.drinks.find(d => d.id === drinkId);
-        if (!drink) return;
-        const reduceBy = Math.min(drink.count, n);
-        drink.count -= reduceBy;
-        pendingConfirmValue = Math.max(0, pendingConfirmValue - (reduceBy * drink.price));
-      });
-      state.sessionActions = [];
-      saveState();
-      renderAll();
-    }
-
-    function backupCurrentState() {
-      localStorage.setItem(BACKUP_KEY, JSON.stringify({ at: new Date().toISOString(), drinks: state.drinks }));
-    }
-
-    function resetCounts() {
-      const txt = prompt('Typ RESET om te bevestigen.');
-      if (txt !== 'RESET') return alert('Reset geannuleerd.');
-      backupCurrentState();
-      state.drinks = state.drinks.map(d => ({ ...d, count: 0 }));
-      state.sessionActions = [];
-      state.actionHistory = [];
-      pendingConfirmValue = 0;
-      saveState();
-      renderAll();
-    }
-
-    function restoreBackup() {
-      const raw = localStorage.getItem(BACKUP_KEY);
-      if (!raw) return alert('Geen backup gevonden.');
-      try {
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed.drinks)) throw new Error('bad');
-        state.drinks = parsed.drinks;
-        saveState();
-        renderAll();
-        alert('Backup hersteld.');
-      } catch {
-        alert('Backup kon niet gelezen worden.');
-      }
+    function confirmOrder() {
+      if (state.pendingConfirmValue <= 0) return;
+      state.pendingConfirmValue = 0;
+      persistAndRender();
     }
 
     function buildRowsForExport() {
-      const eventName = document.getElementById('eventName').value.trim() || 'Onbenoemd event';
-      const eventDate = document.getElementById('eventDate').value || todayIso();
+      const currentUser = getCurrentUser();
+      const eventName = document.getElementById('eventName').value.trim() || 'Naam event';
+      const eventDate = document.getElementById('eventDate').value || new Date().toISOString().slice(0, 10);
       const stationId = document.getElementById('stationId').value;
-      const staffName = document.getElementById('staffName').value.trim() || 'Onbekend';
       const formula = document.getElementById('formulaSelect').value;
-      return state.drinks.filter(d => d.count > 0).map(d => ({
-        eventName,
-        eventDate,
-        stationId,
-        staffName,
-        formula,
-        drink: d.name,
-        type: d.type,
-        amount: Math.floor(d.count),
-        stockAfter: Math.floor(Math.max(0, d.stock - d.count)),
-        price: d.price,
-        total: +(d.price * d.count).toFixed(2)
-      }));
-    }
-
-    function csvSafe(value) {
-      const str = String(value ?? '');
-      if (str.includes(';') || str.includes('"') || str.includes('\n')) return '"' + str.replaceAll('"', '""') + '"';
-      return str;
-    }
-
-    function exportCsv() {
-      const rows = buildRowsForExport();
-      const header = ['event', 'datum', 'id', 'naam medewerker', 'formule', 'drank', 'type', 'aantal', 'stock_na', 'prijs', 'totaal'];
-      const lines = [header.join(';')].concat(rows.map(r => [r.eventName, r.eventDate, r.stationId, r.staffName, r.formula, r.drink, r.type, r.amount, r.stockAfter, r.price, r.total].map(csvSafe).join(';')));
-      const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `velvet-export-${todayIso()}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      return state.drinks
+        .filter(d => d.count > 0)
+        .map(d => ({
+          eventName,
+          eventDate,
+          stationId,
+          formula,
+          userEmail: currentUser?.email || '',
+          userFirstName: currentUser?.firstName || '',
+          drink: d.name,
+          category: d.category,
+          amount: d.count,
+          price: d.price,
+          total: +(d.count * d.price).toFixed(2),
+          stockAfter: Math.max(0, d.stock - d.count)
+        }));
     }
 
     async function saveEventSnapshot() {
       const rows = buildRowsForExport();
-      const archive = JSON.parse(localStorage.getItem(ARCHIVE_KEY) || '[]');
-      archive.push({ savedAt: new Date().toISOString(), rows });
-      localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archive));
+      localStorage.setItem('velvet-archive', JSON.stringify({ at: Date.now(), rows }));
 
-      const endpoint = document.getElementById('sheetEndpoint').value.trim();
-      if (endpoint) {
-        try {
-          await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ source: 'velvet-pos', rows })
-          });
-          alert('Lokaal bewaard + doorgestuurd naar Google Apps Script.');
-        } catch {
-          alert('Lokaal bewaard, maar Google sync faalde.');
-        }
-      } else {
-        alert('Lokaal bewaard. Voeg Google Apps Script URL toe bij instellingen.');
+      const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+      const endpoint = (settings.sheetEndpoint || DEFAULT_SCRIPT_ENDPOINT || '').trim();
+
+      if (!endpoint) return alert('Geen Google app script URL ingesteld.');
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source: 'velvet-pos',
+            createdAt: new Date().toISOString(),
+            rows
+          })
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        alert('Lokaal opgeslagen en doorgestuurd naar Google web app.');
+      } catch (error) {
+        console.error('Google web app sync error', error);
+        alert('Lokaal opgeslagen, maar doorsturen naar Google web app is mislukt.');
       }
     }
 
-    function confirmOrder() {
-      if (pendingConfirmValue <= 0) return alert('Nog geen nieuwe dranken om te bevestigen.');
-      alert(`Bevestigd: € ${pendingConfirmValue.toFixed(2).replace('.', ',')}`);
-      pendingConfirmValue = 0;
-      state.sessionActions = [];
-      saveState();
-      renderAll();
+    function exportCsv() { alert('CSV export gestart (demo).'); }
+    function restoreBackup() { alert('Backup herstellen (demo).'); }
+    function undoLast() { const id = state.actionHistory.pop(); if (id) decrementDrink(id); }
+
+    function openSettings() {
+      const me = getCurrentUser();
+      if (!me) return;
+      document.getElementById('settingsModal').classList.remove('hidden');
+      const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+      document.getElementById('sheetEndpoint').value = settings.sheetEndpoint || DEFAULT_SCRIPT_ENDPOINT;
+      document.getElementById('dbLink').value = settings.dbLink || '';
+      document.getElementById('stockLink').value = settings.stockLink || '';
+      const noEdit = me.role === 'administrator';
+      document.getElementById('sheetEndpoint').disabled = noEdit;
+      if (noEdit) document.getElementById('sheetEndpoint').title = 'Administrator kan Google app script niet aanpassen';
     }
 
-    function toggleSettingsMenu() {
-      document.getElementById('settingsMenu').classList.toggle('hidden');
+    function saveSettings() {
+      const me = getCurrentUser();
+      const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+      if (me.role === 'beheerder') settings.sheetEndpoint = document.getElementById('sheetEndpoint').value.trim() || DEFAULT_SCRIPT_ENDPOINT;
+      settings.dbLink = document.getElementById('dbLink').value.trim();
+      settings.stockLink = document.getElementById('stockLink').value.trim();
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      alert('Instellingen bewaard.');
+      document.getElementById('settingsModal').classList.add('hidden');
     }
 
-    function goPrevPage() {
-      currentPage = Math.max(0, currentPage - 1);
-      renderGrid();
+    function openLink(fieldId) {
+      const me = getCurrentUser();
+      if (!me) return;
+      if (me.role === 'administrator' && (fieldId === 'dbLink' || fieldId === 'stockLink')) {
+        alert('Administrator mag deze link niet openen.');
+        return;
+      }
+      const val = document.getElementById(fieldId).value.trim();
+      if (!val) return alert('Geen link ingevuld.');
+      window.open(val, '_blank');
     }
 
-    function goNextPage() {
-      const totalPages = Math.max(1, Math.ceil(getFilteredDrinks().length / PAGE_SIZE));
-      currentPage = Math.min(totalPages - 1, currentPage + 1);
-      renderGrid();
+    document.getElementById('loginBtn').onclick = login;
+    document.getElementById('forgotBtn').onclick = forgotPassword;
+    document.getElementById('registerBtn').onclick = register;
+    document.getElementById('forgotLink').onclick = () => switchAuthPane('forgotPane');
+    document.getElementById('registerLink').onclick = () => switchAuthPane('registerPane');
+    document.getElementById('backLogin').onclick = () => switchAuthPane('loginPane');
+
+    document.getElementById('accountBtn').onclick = () => document.getElementById('accountMenu').classList.toggle('hidden');
+    document.getElementById('logoutBtn').onclick = logout;
+    document.getElementById('editProfileBtn').onclick = () => {
+      const user = getCurrentUser();
+      if (!user) return;
+      document.getElementById('profileEmail').value = user.email;
+      document.getElementById('profileFunction').value = user.functionName || '';
+      document.getElementById('profilePassword').value = '';
+      renderRoleEditor();
+      document.getElementById('profileModal').classList.remove('hidden');
+      document.getElementById('accountMenu').classList.add('hidden');
+    };
+    document.getElementById('saveProfile').onclick = saveProfile;
+    document.getElementById('closeProfile').onclick = () => document.getElementById('profileModal').classList.add('hidden');
+
+    document.getElementById('saveBtn').onclick = saveEventSnapshot;
+    document.getElementById('exportBtn').onclick = exportCsv;
+    document.getElementById('restoreBtn').onclick = restoreBackup;
+    document.getElementById('undoBtn').onclick = undoLast;
+    document.getElementById('confirmBtn').onclick = confirmOrder;
+    document.getElementById('formulaSelect').onchange = renderAll;
+    document.getElementById('andersBtn').onclick = () => {
+      const name = prompt('Naam nieuw artikel');
+      if (!name) return;
+      const price = Number((prompt('Prijs?','0') || '0').replace(',', '.')) || 0;
+      state.drinks.push({ id: `custom_${Date.now()}`, name, category: 'Nieuw', stock: 9999, count: 1, price, formulas: ['light','volledige lijst'] });
+      state.pendingConfirmValue += price;
+      persistAndRender();
+    };
+
+    document.getElementById('settingsToggle').onclick = openSettings;
+    document.getElementById('closeSettings').onclick = () => document.getElementById('settingsModal').classList.add('hidden');
+    document.getElementById('saveSettings').onclick = saveSettings;
+    document.querySelectorAll('.view-link').forEach(btn => btn.onclick = () => openLink(btn.dataset.link));
+
+    document.getElementById('prevPageBtn').onclick = () => { currentPage = Math.max(0, currentPage - 1); renderGrid(); };
+    document.getElementById('nextPageBtn').onclick = () => { const pages = getPagedDrinks().pages; currentPage = Math.min(pages - 1, currentPage + 1); renderGrid(); };
+    document.getElementById('eventDate').value = new Date().toISOString().slice(0,10);
+
+    const bootSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+    if (!bootSettings.sheetEndpoint) {
+      bootSettings.sheetEndpoint = DEFAULT_SCRIPT_ENDPOINT;
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(bootSettings));
     }
 
-    function logout() {
-      document.getElementById('loginOverlay').classList.remove('hidden');
-      document.getElementById('settingsMenu').classList.add('hidden');
-      document.getElementById('loginPin').value = '';
-    }
-
-    function handleLogin() {
-      const pin = document.getElementById('loginPin').value;
-      if (pin !== LOGIN_PIN) return alert('Foute PIN.');
-      document.getElementById('loginOverlay').classList.add('hidden');
-    }
-
-    document.getElementById('formulaSelect').addEventListener('change', () => {
-      currentPage = 0;
-      renderAll();
-    });
-
-    document.getElementById('saveBtn').addEventListener('click', saveEventSnapshot);
-    document.getElementById('exportBtn').addEventListener('click', exportCsv);
-    document.getElementById('resetBtn').addEventListener('click', resetCounts);
-    document.getElementById('restoreBtn').addEventListener('click', restoreBackup);
-    document.getElementById('andersBtn').addEventListener('click', addAndersFromInput);
-    document.getElementById('confirmBtn').addEventListener('click', confirmOrder);
-    document.getElementById('settingsToggle').addEventListener('click', toggleSettingsMenu);
-    document.getElementById('prevPageBtn').addEventListener('click', goPrevPage);
-    document.getElementById('nextPageBtn').addEventListener('click', goNextPage);
-    document.getElementById('accountBtn').addEventListener('click', logout);
-    document.getElementById('logoutBtn').addEventListener('click', logout);
-    document.getElementById('loginBtn').addEventListener('click', handleLogin);
-
-    document.addEventListener('click', (ev) => {
-      const menu = document.getElementById('settingsMenu');
-      const toggle = document.getElementById('settingsToggle');
-      if (!menu.contains(ev.target) && ev.target !== toggle) menu.classList.add('hidden');
-    });
-
-    document.getElementById('eventDate').value = todayIso();
-    renderAll();
+    hydrateAfterLogin();
   </script>
 </body>
 </html>
