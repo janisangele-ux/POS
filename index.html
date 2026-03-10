@@ -279,6 +279,7 @@
       <button class="close" id="closeSettings">×</button>
       <h2 style="font-size:3rem; margin-top:0;">Instellingen</h2>
       <div class="settings-row"><label>Google app script:</label><input id="sheetEndpoint" placeholder="https://..." /><button class="view-link" data-link="sheetEndpoint"><i class="fa-solid fa-eye"></i>Bekijk</button></div>
+      <div class="settings-row"><label>Kolom mapping (JSON):</label><input id="columnMapping" placeholder='{"eventName":"event_naam","amount":"aantal"}' /><button class="action-btn" id="testConnectionBtn"><i class="fa-solid fa-plug"></i>Test</button></div>
       <div class="settings-row"><label>Dagontvangsten:</label><input id="dbLink" placeholder="https://..." /><button class="view-link" data-link="dbLink"><i class="fa-solid fa-eye"></i>Bekijk</button></div>
       <div class="settings-row"><label>Stockbeheer:</label><input id="stockLink" placeholder="https://..." /><button class="view-link" data-link="stockLink"><i class="fa-solid fa-eye"></i>Bekijk</button></div>
       <button class="action-btn" id="saveSettings" style="margin-left:auto; display:block;"><i class="fa-solid fa-floppy-disk"></i> Bewaar</button>
@@ -303,6 +304,20 @@
     const SETTINGS_KEY = 'velvet-settings-v1';
     const POS_STATE_KEY = 'velvet-pos-v3';
     const DEFAULT_SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycby9_vdbVD5YHhe-mAC9ss2CaAB4coe9TpzxXe5uvIFkPPTJ1xDLLxnqlommVx1ILSlO/exec';
+    const DEFAULT_COLUMN_MAPPING = {
+      eventName: 'eventName',
+      eventDate: 'eventDate',
+      stationId: 'stationId',
+      formula: 'formula',
+      userEmail: 'userEmail',
+      userFirstName: 'userFirstName',
+      drink: 'drink',
+      category: 'category',
+      amount: 'amount',
+      price: 'price',
+      total: 'total',
+      stockAfter: 'stockAfter'
+    };
 
     const categoryColors = {
       'Frisdranken': 'var(--frisdranken)',
@@ -596,30 +611,89 @@
         }));
     }
 
+    function getColumnMappingFromSettings(settings) {
+      if (!settings.columnMapping || typeof settings.columnMapping !== 'object') {
+        return { ...DEFAULT_COLUMN_MAPPING };
+      }
+      return { ...DEFAULT_COLUMN_MAPPING, ...settings.columnMapping };
+    }
+
+    function remapRows(rows, columnMapping) {
+      return rows.map(row => {
+        const mapped = {};
+        Object.entries(columnMapping).forEach(([sourceKey, targetKey]) => {
+          if (!targetKey || typeof targetKey !== 'string') return;
+          mapped[targetKey] = row[sourceKey];
+        });
+        return mapped;
+      });
+    }
+
+    async function postToEndpoint(endpoint, payload) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return { mode: 'cors' };
+      } catch (error) {
+        await fetch(endpoint, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        return { mode: 'no-cors', fallbackError: error };
+      }
+    }
+
     async function saveEventSnapshot() {
       const rows = buildRowsForExport();
       localStorage.setItem('velvet-archive', JSON.stringify({ at: Date.now(), rows }));
 
       const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
       const endpoint = (settings.sheetEndpoint || DEFAULT_SCRIPT_ENDPOINT || '').trim();
+      const columnMapping = getColumnMappingFromSettings(settings);
+      const mappedRows = remapRows(rows, columnMapping);
 
       if (!endpoint) return alert('Geen Google app script URL ingesteld.');
 
       try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            source: 'velvet-pos',
-            createdAt: new Date().toISOString(),
-            rows
-          })
+        const result = await postToEndpoint(endpoint, {
+          source: 'velvet-pos',
+          createdAt: new Date().toISOString(),
+          mapping: columnMapping,
+          rows: mappedRows,
+          rawRows: rows
         });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        alert('Lokaal opgeslagen en doorgestuurd naar Google web app.');
+        if (result.mode === 'cors') {
+          alert('Lokaal opgeslagen en doorgestuurd naar Google web app.');
+        } else {
+          console.warn('Google web app fallback naar no-cors gebruikt.', result.fallbackError);
+          alert('Lokaal opgeslagen en verzonden naar Google web app (no-cors fallback).');
+        }
       } catch (error) {
         console.error('Google web app sync error', error);
         alert('Lokaal opgeslagen, maar doorsturen naar Google web app is mislukt.');
+      }
+    }
+
+    async function testConnection() {
+      const endpoint = document.getElementById('sheetEndpoint').value.trim();
+      if (!endpoint) return alert('Vul eerst een Google app script URL in.');
+      try {
+        const result = await postToEndpoint(endpoint, {
+          source: 'velvet-pos',
+          type: 'connection-test',
+          createdAt: new Date().toISOString()
+        });
+        if (result.mode === 'cors') alert('Koppeling OK: endpoint reageert.');
+        else alert('Koppeling verzonden via no-cors fallback (response niet uitleesbaar, controleer logging in web app).');
+      } catch (error) {
+        console.error('Connection test error', error);
+        alert('Koppelingstest mislukt. Controleer URL/publicatie van je Google web app.');
       }
     }
 
@@ -633,6 +707,7 @@
       document.getElementById('settingsModal').classList.remove('hidden');
       const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
       document.getElementById('sheetEndpoint').value = settings.sheetEndpoint || DEFAULT_SCRIPT_ENDPOINT;
+      document.getElementById('columnMapping').value = JSON.stringify(getColumnMappingFromSettings(settings));
       document.getElementById('dbLink').value = settings.dbLink || '';
       document.getElementById('stockLink').value = settings.stockLink || '';
       const noEdit = me.role === 'administrator';
@@ -643,6 +718,17 @@
     function saveSettings() {
       const me = getCurrentUser();
       const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+      try {
+        const parsedMapping = JSON.parse(document.getElementById('columnMapping').value || '{}');
+        if (!parsedMapping || typeof parsedMapping !== 'object' || Array.isArray(parsedMapping)) {
+          alert('Kolom mapping moet geldige JSON van sleutel/waarde-paren zijn.');
+          return;
+        }
+        settings.columnMapping = parsedMapping;
+      } catch (error) {
+        alert('Kolom mapping JSON is ongeldig.');
+        return;
+      }
       if (me.role === 'beheerder') settings.sheetEndpoint = document.getElementById('sheetEndpoint').value.trim() || DEFAULT_SCRIPT_ENDPOINT;
       settings.dbLink = document.getElementById('dbLink').value.trim();
       settings.stockLink = document.getElementById('stockLink').value.trim();
@@ -714,6 +800,7 @@
     document.getElementById('settingsToggle').onclick = openSettings;
     document.getElementById('closeSettings').onclick = () => document.getElementById('settingsModal').classList.add('hidden');
     document.getElementById('saveSettings').onclick = saveSettings;
+    document.getElementById('testConnectionBtn').onclick = testConnection;
     document.querySelectorAll('.view-link').forEach(btn => btn.onclick = () => openLink(btn.dataset.link));
 
     document.getElementById('prevPageBtn').onclick = () => { currentPage = Math.max(0, currentPage - 1); renderGrid(); };
@@ -723,8 +810,11 @@
     const bootSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
     if (!bootSettings.sheetEndpoint) {
       bootSettings.sheetEndpoint = DEFAULT_SCRIPT_ENDPOINT;
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(bootSettings));
     }
+    if (!bootSettings.columnMapping || typeof bootSettings.columnMapping !== 'object') {
+      bootSettings.columnMapping = { ...DEFAULT_COLUMN_MAPPING };
+    }
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(bootSettings));
 
     hydrateAfterLogin();
   </script>
