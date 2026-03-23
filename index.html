@@ -121,6 +121,11 @@
       color: #fff;
       border-color: #111;
     }
+    .category-chip.active {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
     .pager { display: flex; gap: 8px; align-items: center; }
 
     .grid {
@@ -758,13 +763,10 @@
 
     document.getElementById('accountBtn').onclick = () => document.getElementById('accountMenu').classList.toggle('hidden');
     document.getElementById('logoutBtn').onclick = logout;
-    const menuSettingsBtn = document.getElementById('menuSettingsBtn');
-    if (menuSettingsBtn) {
-      menuSettingsBtn.onclick = () => {
-        document.getElementById('accountMenu').classList.add('hidden');
-        openSettings();
-      };
-    }
+    document.getElementById('menuSettingsBtn').onclick = () => {
+      document.getElementById('accountMenu').classList.add('hidden');
+      openSettings();
+    };
     document.getElementById('editProfileBtn').onclick = () => {
       const user = getCurrentUser();
       if (!user) return;
